@@ -1,0 +1,14 @@
+{
+    "key.quickresourcepack.toggle": "Attiva/Disattiva Quick Resource Pack",
+    "category.quickresourcepack": "Quick Resource Pack",
+    "config.quickresourcepack.title": "Impostazioni Quick Resource Pack",
+    "config.quickresourcepack.selected": "Resource Pack Selezionata",
+    "config.quickresourcepack.notifications": "Mostra Notifiche",
+    "config.quickresourcepack.autoapply": "Applica all'Avvio",
+    "notification.quickresourcepack.enabled": "✓ %s attivata",
+    "notification.quickresourcepack.disabled": "✗ %s disattivata",
+    "notification.quickresourcepack.loading": "⏳ Caricamento %s...",
+    "notification.quickresourcepack.nopack": "⚠ Nessuna resource pack selezionata",
+    "notification.quickresourcepack.error": "✗ Errore: %s",
+    "button.quickresourcepack.set": "Imposta per Quick Toggle"
+}

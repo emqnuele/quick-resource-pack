@@ -1,0 +1,36 @@
+{
+    "schemaVersion": 1,
+    "id": "quick-resource-pack",
+    "version": "${version}",
+    "name": "Quick Resource Pack",
+    "description": "Quickly toggle a specific resource pack with a keybind.",
+    "authors": [
+        "emqnuele"
+    ],
+    "contact": {
+        "homepage": "https://emqnueleelefaraci.com/",
+        "sources": "https://github.com/emqnuele/quick-resource-pack"
+    },
+    "license": "MIT",
+    "icon": "icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "client": [
+            "com.emqnuele.quickresourcepack.QuickResourcePackMod"
+        ],
+        "modmenu": [
+            "com.emqnuele.quickresourcepack.integration.ModMenuIntegration"
+        ]
+    },
+    "mixins": [
+        "quickresourcepack.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "minecraft": ">=1.21 <1.22",
+        "java": ">=21",
+        "fabric-api": "*",
+        "cloth-config": "*",
+        "modmenu": "*"
+    }
+}
