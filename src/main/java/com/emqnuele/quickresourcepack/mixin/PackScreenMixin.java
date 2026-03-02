@@ -35,21 +35,6 @@ public abstract class PackScreenMixin extends Screen {
             }
 
             if (entry != null) {
-                // We need to access the profile name.
-                // Since ResourcePackEntry is a simple wrapper, we might need to rely on the
-                // name displayed or use reflection if the field is private.
-                // However, usually we can get the name.
-                // Actually, ResourcePackEntry has a 'getName()' method in some versions or we
-                // can access the profile.
-                // Let's assume we can get the name. In 1.21, it might be different.
-                // Wait, ResourcePackEntry usually holds a ResourcePackOrganizer.Pack.
-                // Let's try to cast and get the name.
-
-                // For now, I'll use a safe approach assuming standard access patterns or I'll
-                // need to check mappings.
-                // In 1.21.4, let's assume entry.getName() returns the pack name or ID.
-                // Actually, looking at Yarn mappings, ResourcePackEntry has `getName()`.
-
                 String packName = entry.getName();
                 ModConfig.getInstance().selectedResourcePack = packName;
                 ModConfig.save();
