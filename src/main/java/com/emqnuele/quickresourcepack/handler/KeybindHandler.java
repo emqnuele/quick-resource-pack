@@ -1,32 +1,51 @@
 package com.emqnuele.quickresourcepack.handler;
 
+import com.emqnuele.quickresourcepack.screen.QuickMenuScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-
-import com.emqnuele.quickresourcepack.config.ModConfig;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import org.lwjgl.glfw.GLFW;
 
 public class KeybindHandler {
-    private static boolean wasPressed = false;
+
+    private static KeyBinding TOGGLE_BINDING;
+    private static KeyBinding MENU_BINDING;
 
     public static void register() {
-        // We do NOT register a KeyBinding here anymore to avoid crashes on
-        // 1.21.9/Lunar.
-        // Instead, we manually poll the key in the client tick event.
+        TOGGLE_BINDING = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.quickresourcepack.toggle",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_R,
+                "category.quickresourcepack"
+        ));
+
+        MENU_BINDING = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.quickresourcepack.open_menu",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_UNKNOWN,
+                "category.quickresourcepack"
+        ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.getWindow() == null)
-                return;
-
-            int keyCode = ModConfig.getInstance().toggleKeyCode;
-            // Use GLFW directly to avoid mapping issues with InputUtil.isKeyPressed
-            boolean isPressed = org.lwjgl.glfw.GLFW.glfwGetKey(client.getWindow().getHandle(),
-                    keyCode) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-
-            if (isPressed && !wasPressed) {
-                // Key just pressed
+            while (TOGGLE_BINDING.wasPressed()) {
                 ResourcePackHandler.togglePack();
             }
-
-            wasPressed = isPressed;
+            while (MENU_BINDING.wasPressed()) {
+                if (client.currentScreen instanceof QuickMenuScreen) {
+                    client.setScreen(null);
+                } else {
+                    client.setScreen(new QuickMenuScreen(client.currentScreen));
+                }
+            }
         });
+    }
+
+    public static KeyBinding getToggleBinding() {
+        return TOGGLE_BINDING;
+    }
+
+    public static KeyBinding getMenuBinding() {
+        return MENU_BINDING;
     }
 }

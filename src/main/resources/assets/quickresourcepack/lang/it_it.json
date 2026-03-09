@@ -1,14 +1,31 @@
 {
-    "key.quickresourcepack.toggle": "Attiva/Disattiva Quick Resource Pack",
     "category.quickresourcepack": "Quick Resource Pack",
+
+    "key.quickresourcepack.toggle": "Attiva/Disattiva Quick Resource Pack",
+    "key.quickresourcepack.open_menu": "Apri Menu Rapido",
+
     "config.quickresourcepack.title": "Impostazioni Quick Resource Pack",
-    "config.quickresourcepack.selected": "Resource Pack Selezionata",
+    "config.quickresourcepack.selected": "Resource Pack Selezionato",
     "config.quickresourcepack.notifications": "Mostra Notifiche",
-    "config.quickresourcepack.autoapply": "Applica all'Avvio",
-    "notification.quickresourcepack.enabled": "✓ %s attivata",
-    "notification.quickresourcepack.disabled": "✗ %s disattivata",
-    "notification.quickresourcepack.loading": "⏳ Caricamento %s...",
-    "notification.quickresourcepack.nopack": "⚠ Nessuna resource pack selezionata",
-    "notification.quickresourcepack.error": "✗ Errore: %s",
-    "button.quickresourcepack.set": "Imposta per Quick Toggle"
+    "config.quickresourcepack.autoapply": "Applica automaticamente all'avvio",
+
+    "screen.quickresourcepack.menu": "Quick Resource Pack",
+    "screen.quickresourcepack.menu.pack": "Pack Selezionato",
+    "screen.quickresourcepack.menu.notifications": "Notifiche: %s",
+    "screen.quickresourcepack.menu.autoapply": "Applica all'avvio: %s",
+
+    "screen.quickresourcepack.picker": "Seleziona Resource Pack",
+    "screen.quickresourcepack.picker.set": "Imposta",
+    "screen.quickresourcepack.picker.none": "Nessuno",
+
+    "button.quickresourcepack.toggle": "Attiva/Disattiva",
+    "button.quickresourcepack.select": "Cambia Pack",
+    "button.quickresourcepack.set": "Imposta come Quick Toggle",
+
+    "notification.quickresourcepack.enabled": "%s attivato",
+    "notification.quickresourcepack.disabled": "%s disattivato",
+    "notification.quickresourcepack.loading": "Caricamento resource pack...",
+    "notification.quickresourcepack.nopack": "Nessun resource pack configurato",
+    "notification.quickresourcepack.notfound": "Resource pack non trovato: %s",
+    "notification.quickresourcepack.set": "Quick toggle impostato su: %s"
 }

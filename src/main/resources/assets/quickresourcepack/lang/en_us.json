@@ -1,14 +1,31 @@
 {
-    "key.quickresourcepack.toggle": "Toggle Quick Resource Pack",
     "category.quickresourcepack": "Quick Resource Pack",
+
+    "key.quickresourcepack.toggle": "Toggle Quick Resource Pack",
+    "key.quickresourcepack.open_menu": "Open Quick Menu",
+
     "config.quickresourcepack.title": "Quick Resource Pack Settings",
     "config.quickresourcepack.selected": "Selected Resource Pack",
     "config.quickresourcepack.notifications": "Show Notifications",
     "config.quickresourcepack.autoapply": "Auto-apply on Start",
-    "notification.quickresourcepack.enabled": "✓ %s enabled",
-    "notification.quickresourcepack.disabled": "✗ %s disabled",
-    "notification.quickresourcepack.loading": "⏳ Loading %s...",
-    "notification.quickresourcepack.nopack": "⚠ No resource pack selected",
-    "notification.quickresourcepack.error": "✗ Error: %s",
-    "button.quickresourcepack.set": "Set for Quick Toggle"
+
+    "screen.quickresourcepack.menu": "Quick Resource Pack",
+    "screen.quickresourcepack.menu.pack": "Selected Pack",
+    "screen.quickresourcepack.menu.notifications": "Notifications: %s",
+    "screen.quickresourcepack.menu.autoapply": "Auto-apply on Start: %s",
+
+    "screen.quickresourcepack.picker": "Select Resource Pack",
+    "screen.quickresourcepack.picker.set": "Set",
+    "screen.quickresourcepack.picker.none": "None",
+
+    "button.quickresourcepack.toggle": "Toggle Pack",
+    "button.quickresourcepack.select": "Change Pack",
+    "button.quickresourcepack.set": "Set as Quick Toggle",
+
+    "notification.quickresourcepack.enabled": "%s enabled",
+    "notification.quickresourcepack.disabled": "%s disabled",
+    "notification.quickresourcepack.loading": "Loading resource pack...",
+    "notification.quickresourcepack.nopack": "No resource pack configured",
+    "notification.quickresourcepack.notfound": "Resource pack not found: %s",
+    "notification.quickresourcepack.set": "Quick toggle set to: %s"
 }

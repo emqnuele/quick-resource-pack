@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:fabricmc.net)",
+      "Bash(./gradlew build)",
+      "Bash(cmd /c \"gradlew.bat build 2>&1\")",
+      "Bash(cmd.exe /c \"gradlew.bat build 2>&1\")",
+      "Bash(cmd.exe /c \"gradlew.bat compileJava 2>&1\")",
+      "Bash(echo \"EXIT_CODE: $?\")",
+      "Bash(dir /s /b \"C:\\\\Users\\\\emanu\\\\.gradle\\\\caches\\\\fabric-loom\\\\1.21.4\\\\decompile\")",
+      "Bash(dir /s /b \"C:\\\\Users\\\\emanu\\\\.gradle\\\\caches\\\\fabric-loom\")",
+      "Bash(SOURCES_JAR=\"C:/Users/emanu/Documents/codes/quick-resource-pack/.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-merged-f250296b50/1.21.4-net.fabricmc.yarn.1_21_4.1.21.4+build.2-v2/minecraft-merged-f250296b50-1.21.4-net.fabricmc.yarn.1_21_4.1.21.4+build.2-v2-sources.jar\")",
+      "Bash(jar -tf \"$SOURCES_JAR\")",
+      "Bash(./gradlew.bat compileJava)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:wiki.fabricmc.net)",
+      "WebSearch",
+      "WebFetch(domain:docs.fabricmc.net)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:gist.github.com)"
+    ]
+  }
+}

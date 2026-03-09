@@ -2,10 +2,10 @@ package com.emqnuele.quickresourcepack.mixin;
 
 import com.emqnuele.quickresourcepack.config.ModConfig;
 import com.emqnuele.quickresourcepack.handler.NotificationHandler;
+import com.emqnuele.quickresourcepack.handler.ResourcePackHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.PackListWidget;
 import net.minecraft.client.gui.screen.pack.PackScreen;
-import net.minecraft.client.gui.screen.pack.ResourcePackOrganizer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,26 +28,23 @@ public abstract class PackScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void init(CallbackInfo ci) {
-        this.addDrawableChild(ButtonWidget.builder(Text.literal("Set Quick Toggle Pack"), button -> {
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("button.quickresourcepack.set"), button -> {
             PackListWidget.ResourcePackEntry entry = this.availablePackList.getSelectedOrNull();
             if (entry == null) {
                 entry = this.selectedPackList.getSelectedOrNull();
             }
 
             if (entry != null) {
-                String packName = entry.getName();
-                ModConfig.getInstance().selectedResourcePack = packName;
+                String packId = entry.getName();
+                String displayName = ResourcePackHandler.getPackDisplayName(packId);
+                ModConfig.getInstance().selectedResourcePack = packId;
                 ModConfig.save();
-                NotificationHandler.showToast(
-                        Text.translatable("notification.quickresourcepack.enabled", packName),
-                        Text.literal("Saved for Quick Toggle"));
+                NotificationHandler.notify(Text.translatable("notification.quickresourcepack.set", displayName));
             } else {
-                NotificationHandler.showToast(
-                        Text.translatable("notification.quickresourcepack.nopack"),
-                        Text.literal("Select a pack first"));
+                NotificationHandler.notify(Text.translatable("notification.quickresourcepack.nopack"));
             }
         })
-                .dimensions(this.width / 2 + 4, this.height - 48, 150, 20)
+                .dimensions(this.width / 2 - 75, this.height - 24, 150, 20)
                 .build());
     }
 }
