@@ -20,6 +20,46 @@ A Fabric mod for Minecraft that allows you to quickly toggle a specific resource
     - [Cloth Config API](https://modrinth.com/mod/cloth-config)
     - [Mod Menu](https://modrinth.com/mod/modmenu)
 
+## Development Setup (Fedora/Linux)
+
+This project uses a dual-JDK workflow:
+
+- Java 21 for active development on Minecraft 1.21.x
+- Java 25 kept installed for future migration to 26.x
+
+### 1) Install both JDKs
+
+```bash
+sudo dnf install java-21-openjdk-devel java-25-openjdk-devel
+```
+
+### 2) Use project wrappers
+
+Run Gradle through the provided wrappers:
+
+```bash
+./gw21 tasks --all
+./gw21 runClient
+./gw21 build
+```
+
+`gw21` forces Gradle to run on Java 21, regardless of your system default Java.
+
+For future migration work, this wrapper is ready as well:
+
+```bash
+./gw25 --version
+```
+
+### 3) Optional custom JDK paths
+
+If your JDKs are not in standard Fedora paths, set:
+
+- `JAVA21_HOME`
+- `JAVA25_HOME`
+
+The wrappers automatically use these variables when present.
+
 ## Usage
 
 1. **Select a Pack**:
