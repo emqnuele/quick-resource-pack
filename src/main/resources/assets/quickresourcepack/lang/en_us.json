@@ -20,7 +20,7 @@
 
     "button.quickresourcepack.toggle": "Toggle Pack",
     "button.quickresourcepack.select": "Change Pack",
-    "button.quickresourcepack.set": "Set as Quick Toggle",
+    "button.quickresourcepack.set": "Set Quick Toggle",
 
     "notification.quickresourcepack.enabled": "%s enabled",
     "notification.quickresourcepack.disabled": "%s disabled",

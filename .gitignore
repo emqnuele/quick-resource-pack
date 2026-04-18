@@ -26,3 +26,6 @@ out/
 
 # Fabric
 run/
+
+# local compatibility logs
+compat-logs/

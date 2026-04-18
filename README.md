@@ -60,6 +60,32 @@ If your JDKs are not in standard Fedora paths, set:
 
 The wrappers automatically use these variables when present.
 
+### 4) Verify compatibility across 1.21.x
+
+Run the compatibility checker script:
+
+```bash
+./scripts/check-compat-1.21.sh
+```
+
+What it does for each stable `1.21.x` release:
+
+- Resolves latest Yarn mappings for that patch
+- Resolves latest Fabric API build for that patch
+- Runs `clean compileJava` with version overrides via `gw21`
+- Writes per-version logs under `compat-logs/`
+
+You can also run a targeted subset while developing:
+
+```bash
+./scripts/check-compat-1.21.sh 1.21.4 1.21.11
+```
+
+CI is included in `.github/workflows/compat-1-21.yml`:
+
+- PR/Push: representative smoke matrix (`1.21.1`, `1.21.4`, `1.21.8`, `1.21.11`)
+- Schedule/Manual: full stable `1.21.x` matrix
+
 ## Usage
 
 1. **Select a Pack**:
