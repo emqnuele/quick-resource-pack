@@ -95,10 +95,10 @@ public class ResourcePackPickerScreen extends Screen {
                 context.fill(itemX0, y, itemX1, y + ITEM_H, 0xFF3A3A3A);
             }
 
-            context.drawTextWithShadow(textRenderer, entries.get(idx)[1], itemX0 + 4, y + (ITEM_H - 8) / 2, sel ? 0xFFFFFF : 0xCCCCCC);
+            context.drawTextWithShadow(textRenderer, entries.get(idx)[1], itemX0 + 4, y + (ITEM_H - 8) / 2, sel ? 0xFFFFFFFF : 0xFFCCCCCC);
         }
 
-        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 14, 0xFFFFFF);
+        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 14, 0xFFFFFFFF);
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
