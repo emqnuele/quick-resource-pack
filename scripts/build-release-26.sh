@@ -37,7 +37,6 @@ options:
   --base-version <v>   base mod version (default: mod_version from gradle.properties)
   --out-dir <path>     output folder (default: release/26.x)
   --include-sources    copy -sources jars too
-  --include-major-tag  add '26' to manifest game_versions values
   --gw <path>          gradle command (default: ./gw25)
   --dry-run            print commands without running gradle
   -h, --help           show this help
@@ -45,7 +44,6 @@ options:
 examples:
   ./scripts/build-release-26.sh --base-version 1.2.0
   ./scripts/build-release-26.sh --base-version 1.2.0 26.1 26.1.2
-  ./scripts/build-release-26.sh --base-version 1.2.0 --include-major-tag
 EOF
 }
 
@@ -88,6 +86,12 @@ done
 
 if [[ -z "$BASE_VERSION" ]]; then
   echo "base version is empty; use --base-version or set mod_version in gradle.properties" >&2
+  exit 2
+fi
+
+if [[ $INCLUDE_MAJOR_TAG -eq 1 ]]; then
+  echo "--include-major-tag is unsupported: Modrinth rejects plain '26' in game_versions" >&2
+  echo "use patch versions only (26.1, 26.1.1, 26.1.2)" >&2
   exit 2
 fi
 
@@ -201,9 +205,6 @@ for row in "${TARGET_ROWS[@]}"; do
   fi
 
   game_versions="$mc"
-  if [[ $INCLUDE_MAJOR_TAG -eq 1 ]]; then
-    game_versions="$mc;26"
-  fi
 
   printf '%s,%s,%s,%s,%s,%s,%s\n' \
     "${mc}/quick-resource-pack-$version_number.jar" \
