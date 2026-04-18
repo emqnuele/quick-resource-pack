@@ -16,6 +16,8 @@ usage: ./scripts/check-compat-1.21.sh [--gw <path>] [--fail-fast] [1.21.x ...]
 runs compile checks across minecraft 1.21.x versions by auto-resolving:
 - latest yarn mappings for each target patch
 - latest fabric-api build matching each target patch
+- patch-aligned cloth config version
+- patch-aligned mod menu version
 
 examples:
   ./scripts/check-compat-1.21.sh
@@ -93,6 +95,38 @@ latest_fabric_api_for() {
     | tail -n 1
 }
 
+cloth_config_for_patch() {
+  local patch="$1"
+  if (( patch >= 9 )); then
+    echo "21.11.153"
+  elif (( patch >= 6 )); then
+    echo "19.0.147"
+  elif (( patch >= 4 )); then
+    echo "18.0.145"
+  else
+    echo "15.0.140"
+  fi
+}
+
+mod_menu_for_patch() {
+  local patch="$1"
+  if (( patch >= 11 )); then
+    echo "17.0.0"
+  elif (( patch >= 9 )); then
+    echo "16.0.1"
+  elif (( patch >= 6 )); then
+    echo "15.0.2"
+  elif (( patch == 5 )); then
+    echo "14.0.2"
+  elif (( patch >= 4 )); then
+    echo "13.0.4"
+  elif (( patch >= 2 )); then
+    echo "12.0.1"
+  else
+    echo "11.0.4"
+  fi
+}
+
 if [[ ${#TARGETS[@]} -eq 0 ]]; then
   mapfile -t TARGETS < <(discover_targets)
 fi
@@ -106,15 +140,28 @@ LOG_DIR="$ROOT_DIR/compat-logs"
 mkdir -p "$LOG_DIR"
 
 failures=0
-printf "%-10s %-20s %-24s %-8s\n" "mc" "yarn" "fabric-api" "status"
-printf "%-10s %-20s %-24s %-8s\n" "----------" "--------------------" "------------------------" "--------"
+printf "%-10s %-20s %-24s %-12s %-10s %-8s\n" "mc" "yarn" "fabric-api" "cloth" "modmenu" "status"
+printf "%-10s %-20s %-24s %-12s %-10s %-8s\n" "----------" "--------------------" "------------------------" "------------" "----------" "--------"
 
 for game_version in "${TARGETS[@]}"; do
+  if [[ ! "$game_version" =~ ^1\.21\.([0-9]+)$ ]]; then
+    printf "%-10s %-20s %-24s %-12s %-10s %-8s\n" "$game_version" "n/a" "n/a" "n/a" "n/a" "fail"
+    echo "  unsupported target format: $game_version"
+    failures=$((failures + 1))
+    if [[ $FAIL_FAST -eq 1 ]]; then
+      break
+    fi
+    continue
+  fi
+
+  patch="${BASH_REMATCH[1]}"
   yarn_version=$(latest_yarn_for "$game_version" || true)
   fabric_api_version=$(latest_fabric_api_for "$game_version" || true)
+  cloth_config_version=$(cloth_config_for_patch "$patch")
+  mod_menu_version=$(mod_menu_for_patch "$patch")
 
-  if [[ -z "$yarn_version" || -z "$fabric_api_version" ]]; then
-    printf "%-10s %-20s %-24s %-8s\n" "$game_version" "n/a" "n/a" "fail"
+  if [[ -z "$yarn_version" || -z "$fabric_api_version" || -z "$cloth_config_version" || -z "$mod_menu_version" ]]; then
+    printf "%-10s %-20s %-24s %-12s %-10s %-8s\n" "$game_version" "n/a" "n/a" "n/a" "n/a" "fail"
     echo "  unresolved dependency metadata for $game_version"
     failures=$((failures + 1))
     if [[ $FAIL_FAST -eq 1 ]]; then
@@ -128,10 +175,12 @@ for game_version in "${TARGETS[@]}"; do
     -Pminecraft_version="$game_version" \
     -Pyarn_mappings="$yarn_version" \
     -Pfabric_version="$fabric_api_version" \
+    -Pcloth_config_version="$cloth_config_version" \
+    -Pmod_menu_version="$mod_menu_version" \
     >"$log_file" 2>&1; then
-    printf "%-10s %-20s %-24s %-8s\n" "$game_version" "$yarn_version" "$fabric_api_version" "ok"
+    printf "%-10s %-20s %-24s %-12s %-10s %-8s\n" "$game_version" "$yarn_version" "$fabric_api_version" "$cloth_config_version" "$mod_menu_version" "ok"
   else
-    printf "%-10s %-20s %-24s %-8s\n" "$game_version" "$yarn_version" "$fabric_api_version" "fail"
+    printf "%-10s %-20s %-24s %-12s %-10s %-8s\n" "$game_version" "$yarn_version" "$fabric_api_version" "$cloth_config_version" "$mod_menu_version" "fail"
     echo "  log: ${log_file#$ROOT_DIR/}"
     failures=$((failures + 1))
     if [[ $FAIL_FAST -eq 1 ]]; then

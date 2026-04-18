@@ -34,8 +34,8 @@ public abstract class PackScreenMixin extends Screen {
     }
 
     @Unique
-    private PackListWidget.ResourcePackEntry quickResourcePack$getSelectedEntry() {
-        PackListWidget.ResourcePackEntry entry = this.availablePackList.getSelectedOrNull();
+    private PackListWidget.Entry quickResourcePack$getSelectedEntry() {
+        PackListWidget.Entry entry = this.availablePackList.getSelectedOrNull();
         if (entry == null) {
             entry = this.selectedPackList.getSelectedOrNull();
         }
@@ -73,10 +73,10 @@ public abstract class PackScreenMixin extends Screen {
         }
 
         this.quickResourcePack$button = this.addDrawableChild(ButtonWidget.builder(Text.translatable("button.quickresourcepack.set"), button -> {
-            PackListWidget.ResourcePackEntry entry = this.quickResourcePack$getSelectedEntry();
+            PackListWidget.Entry entry = this.quickResourcePack$getSelectedEntry();
 
-            if (entry != null) {
-                String packId = entry.getName();
+            if (entry instanceof PackListWidget.ResourcePackEntry resourcePackEntry) {
+                String packId = resourcePackEntry.getName();
                 String displayName = ResourcePackHandler.getPackDisplayName(packId);
                 ModConfig.getInstance().selectedResourcePack = packId;
                 ModConfig.save();

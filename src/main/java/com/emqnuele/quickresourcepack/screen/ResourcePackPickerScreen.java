@@ -101,7 +101,6 @@ public class ResourcePackPickerScreen extends Screen {
         context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 14, 0xFFFFFF);
     }
 
-    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int listBottom = height - 36;
         int itemX0 = width / 2 - 130;
@@ -118,7 +117,7 @@ public class ResourcePackPickerScreen extends Screen {
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return false;
     }
 
     @Override

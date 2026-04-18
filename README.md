@@ -72,6 +72,7 @@ What it does for each stable `1.21.x` release:
 
 - Resolves latest Yarn mappings for that patch
 - Resolves latest Fabric API build for that patch
+- Selects patch-aligned Cloth Config and Mod Menu versions
 - Runs `clean compileJava` with version overrides via `gw21`
 - Writes per-version logs under `compat-logs/`
 
