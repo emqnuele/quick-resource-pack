@@ -18,7 +18,7 @@ A Fabric mod for Minecraft that allows you to quickly toggle a specific resource
 4. Ensure you have the following dependencies installed:
     - [Fabric API](https://modrinth.com/mod/fabric-api)
     - [Cloth Config API](https://modrinth.com/mod/cloth-config)
-    - [Mod Menu](https://modrinth.com/mod/modmenu)
+    - [Mod Menu](https://modrinth.com/mod/modmenu) (optional, recommended)
 
 ## Development Setup (Fedora/Linux)
 
@@ -136,6 +136,37 @@ Useful options:
 # skip default dependencies if needed
 ./scripts/publish_modrinth_releases.py --project quick-resource-pack --no-default-deps
 ```
+
+### 7) Check and build all 26.1.x releases
+
+Run compatibility checks for the 26.x line:
+
+```bash
+./scripts/check-compat-26.sh
+```
+
+Build all patch-specific jars for Modrinth:
+
+```bash
+./scripts/build-release-26.sh --base-version 1.2.0
+```
+
+This writes artifacts and manifest to:
+
+- `release/26.x/<mc-version>/...`
+- `release/26.x/modrinth-upload.csv`
+
+Publish using the wrapper script:
+
+```bash
+export MODRINTH_TOKEN="your_modrinth_api_token"
+./scripts/publish-release-26.sh
+```
+
+Notes:
+
+- The current stable targets are `26.1`, `26.1.1`, `26.1.2`.
+- `26` is treated as an alias to latest known 26.x target in scripts.
 
 ## Usage
 

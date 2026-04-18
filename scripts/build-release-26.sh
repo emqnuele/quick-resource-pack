@@ -5,50 +5,47 @@ set -euo pipefail
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT_DIR"
 
-GW_CMD=${GW_CMD:-./gw21}
-OUT_DIR="$ROOT_DIR/release/1.21.x"
+GW_CMD=${GW_CMD:-./gw25}
+OUT_DIR="$ROOT_DIR/release/26.x"
 BASE_VERSION=$(sed -n 's/^mod_version=//p' "$ROOT_DIR/gradle.properties" | head -n 1 | tr -d '\r')
 INCLUDE_SOURCES=0
+INCLUDE_MAJOR_TAG=0
 DRY_RUN=0
 declare -a REQUESTED_TARGETS=()
 
 MATRIX=$(cat <<'EOF'
-1.21.1|1.21.1+build.3|0.116.11+1.21.1|15.0.140|11.0.4
-1.21.2|1.21.2+build.1|0.106.1+1.21.2|15.0.140|12.0.1
-1.21.3|1.21.3+build.2|0.114.1+1.21.3|15.0.140|12.0.1
-1.21.4|1.21.4+build.8|0.119.4+1.21.4|18.0.145|13.0.4
-1.21.5|1.21.5+build.1|0.128.2+1.21.5|18.0.145|14.0.2
-1.21.6|1.21.6+build.1|0.128.2+1.21.6|19.0.147|15.0.2
-1.21.7|1.21.7+build.8|0.129.0+1.21.7|19.0.147|15.0.2
-1.21.8|1.21.8+build.1|0.136.1+1.21.8|19.0.147|15.0.2
-1.21.9|1.21.9+build.1|0.134.1+1.21.9|21.11.153|16.0.1
-1.21.10|1.21.10+build.3|0.138.4+1.21.10|21.11.153|16.0.1
-1.21.11|1.21.11+build.4|0.141.3+1.21.11|21.11.153|17.0.0
+26.1|0.145.1+26.1|26.1.154|18.0.0-alpha.8
+26.1.1|0.145.4+26.1.1|26.1.154|18.0.0-alpha.8
+26.1.2|0.146.1+26.1.2|26.1.154|18.0.0-alpha.8
 EOF
 )
 
 usage() {
   cat <<'EOF'
-usage: ./scripts/build-release-1.21.sh [options] [1.21.x ...]
+usage: ./scripts/build-release-26.sh [options] [26.x ...]
 
-builds modrinth-ready jars for minecraft 1.21.x.
+builds modrinth-ready jars for minecraft 26.1.x.
 
 the output layout is:
-- release/1.21.x/<mc-version>/quick-resource-pack-<mod-version>-mc<mc-version>.jar
-- release/1.21.x/modrinth-upload.csv
+- release/26.x/<mc-version>/quick-resource-pack-<mod-version>-mc<mc-version>.jar
+- release/26.x/modrinth-upload.csv
+
+notes:
+- target "26" is treated as alias of latest known 26.x target (currently 26.1.2)
 
 options:
   --base-version <v>   base mod version (default: mod_version from gradle.properties)
-  --out-dir <path>     output folder (default: release/1.21.x)
+  --out-dir <path>     output folder (default: release/26.x)
   --include-sources    copy -sources jars too
-  --gw <path>          gradle command (default: ./gw21)
+  --include-major-tag  add '26' to manifest game_versions values
+  --gw <path>          gradle command (default: ./gw25)
   --dry-run            print commands without running gradle
   -h, --help           show this help
 
 examples:
-  ./scripts/build-release-1.21.sh --base-version 1.1.0
-  ./scripts/build-release-1.21.sh --base-version 1.1.0 1.21.8 1.21.11
-  GW_CMD=./gw21 ./scripts/build-release-1.21.sh --include-sources
+  ./scripts/build-release-26.sh --base-version 1.2.0
+  ./scripts/build-release-26.sh --base-version 1.2.0 26.1 26.1.2
+  ./scripts/build-release-26.sh --base-version 1.2.0 --include-major-tag
 EOF
 }
 
@@ -68,6 +65,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --include-sources)
       INCLUDE_SOURCES=1
+      shift
+      ;;
+    --include-major-tag)
+      INCLUDE_MAJOR_TAG=1
       shift
       ;;
     --gw)
@@ -107,15 +108,32 @@ contains_target() {
   return 1
 }
 
+normalize_target() {
+  local target="$1"
+  if [[ "$target" == "26" ]]; then
+    echo "26.1.2"
+    return 0
+  fi
+  echo "$target"
+}
+
 declare -a TARGET_ROWS=()
 declare -a KNOWN_TARGETS=()
+declare -a NORMALIZED_REQUESTED_TARGETS=()
 
-while IFS='|' read -r mc yarn fabric cloth modmenu; do
+for requested in "${REQUESTED_TARGETS[@]}"; do
+  normalized=$(normalize_target "$requested")
+  if ! contains_target "$normalized" "${NORMALIZED_REQUESTED_TARGETS[@]}"; then
+    NORMALIZED_REQUESTED_TARGETS+=("$normalized")
+  fi
+done
+
+while IFS='|' read -r mc fabric cloth modmenu; do
   [[ -z "$mc" ]] && continue
   KNOWN_TARGETS+=("$mc")
 
-  if [[ ${#REQUESTED_TARGETS[@]} -eq 0 ]] || contains_target "$mc" "${REQUESTED_TARGETS[@]}"; then
-    TARGET_ROWS+=("$mc|$yarn|$fabric|$cloth|$modmenu")
+  if [[ ${#NORMALIZED_REQUESTED_TARGETS[@]} -eq 0 ]] || contains_target "$mc" "${NORMALIZED_REQUESTED_TARGETS[@]}"; then
+    TARGET_ROWS+=("$mc|$fabric|$cloth|$modmenu")
   fi
 done <<< "$MATRIX"
 
@@ -124,7 +142,7 @@ if [[ ${#TARGET_ROWS[@]} -eq 0 ]]; then
   exit 2
 fi
 
-for target in "${REQUESTED_TARGETS[@]}"; do
+for target in "${NORMALIZED_REQUESTED_TARGETS[@]}"; do
   if ! contains_target "$target" "${KNOWN_TARGETS[@]}"; then
     echo "unsupported target: $target" >&2
     echo "known targets: ${KNOWN_TARGETS[*]}" >&2
@@ -139,21 +157,20 @@ if [[ $DRY_RUN -eq 0 ]]; then
   printf 'file,version_number,game_versions,loaders,fabric_api,cloth_config,mod_menu\n' > "$MANIFEST_PATH"
 fi
 
-printf "%-10s %-22s %-22s %-12s %-10s\n" "mc" "version_number" "fabric_api" "cloth" "modmenu"
-printf "%-10s %-22s %-22s %-12s %-10s\n" "----------" "----------------------" "----------------------" "------------" "----------"
+printf "%-10s %-22s %-22s %-12s %-14s\n" "mc" "version_number" "fabric_api" "cloth" "modmenu"
+printf "%-10s %-22s %-22s %-12s %-14s\n" "----------" "----------------------" "----------------------" "------------" "--------------"
 
 for row in "${TARGET_ROWS[@]}"; do
-  IFS='|' read -r mc yarn fabric cloth modmenu <<< "$row"
+  IFS='|' read -r mc fabric cloth modmenu <<< "$row"
   version_number="${BASE_VERSION}-mc${mc}"
 
-  printf "%-10s %-22s %-22s %-12s %-10s\n" "$mc" "$version_number" "$fabric" "$cloth" "$modmenu"
+  printf "%-10s %-22s %-22s %-12s %-14s\n" "$mc" "$version_number" "$fabric" "$cloth" "$modmenu"
 
   gradle_cmd=(
     "$GW_CMD" --no-daemon clean build
     "-Pmod_version=$version_number"
     "-Pminecraft_version=$mc"
-    "-Pyarn_mappings=$yarn"
-    "-Pfabric_version=$fabric"
+    "-Pfabric_api_version=$fabric"
     "-Pcloth_config_version=$cloth"
     "-Pmod_menu_version=$modmenu"
   )
@@ -183,10 +200,15 @@ for row in "${TARGET_ROWS[@]}"; do
     fi
   fi
 
+  game_versions="$mc"
+  if [[ $INCLUDE_MAJOR_TAG -eq 1 ]]; then
+    game_versions="$mc;26"
+  fi
+
   printf '%s,%s,%s,%s,%s,%s,%s\n' \
     "${mc}/quick-resource-pack-$version_number.jar" \
     "$version_number" \
-    "$mc" \
+    "$game_versions" \
     "fabric" \
     "$fabric" \
     "$cloth" \
