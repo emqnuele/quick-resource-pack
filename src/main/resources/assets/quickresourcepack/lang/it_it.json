@@ -10,7 +10,7 @@
     "config.quickresourcepack.autoapply": "Applica automaticamente all'avvio",
 
     "screen.quickresourcepack.menu": "Quick Resource Pack",
-    "screen.quickresourcepack.menu.pack": "Pack Selezionato",
+    "screen.quickresourcepack.menu.pack": "Pack Selezionato: %s",
     "screen.quickresourcepack.menu.notifications": "Notifiche: %s",
     "screen.quickresourcepack.menu.autoapply": "Applica all'avvio: %s",
 
@@ -20,6 +20,7 @@
 
     "button.quickresourcepack.toggle": "Attiva/Disattiva",
     "button.quickresourcepack.select": "Cambia Pack",
+    "button.quickresourcepack.open_config": "Apri Impostazioni",
     "button.quickresourcepack.set": "Imposta toggle rapido",
 
     "notification.quickresourcepack.enabled": "%s attivato",
