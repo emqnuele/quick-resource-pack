@@ -4,12 +4,15 @@ import com.emqnuele.quickresourcepack.config.ModConfig;
 import com.emqnuele.quickresourcepack.handler.NotificationHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.text.Text;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,7 +120,53 @@ public class ResourcePackPickerScreen extends Screen {
                 }
             }
         }
+
+        Object modernClick = createModernClick(mouseX, mouseY, button);
+
+        for (Element element : this.children()) {
+            if (invokeLegacyMouseClicked(element, mouseX, mouseY, button)) {
+                return true;
+            }
+            if (modernClick != null && invokeModernMouseClicked(element, modernClick)) {
+                return true;
+            }
+        }
+
         return false;
+    }
+
+    private Object createModernClick(double mouseX, double mouseY, int button) {
+        try {
+            Class<?> mouseInputClass = Class.forName("net.minecraft.client.input.MouseInput");
+            Constructor<?> mouseInputConstructor = mouseInputClass.getConstructor(int.class, int.class);
+            Object mouseInput = mouseInputConstructor.newInstance(button, 0);
+
+            Class<?> clickClass = Class.forName("net.minecraft.client.gui.Click");
+            Constructor<?> clickConstructor = clickClass.getConstructor(double.class, double.class, mouseInputClass);
+            return clickConstructor.newInstance(mouseX, mouseY, mouseInput);
+        } catch (ReflectiveOperationException | IllegalArgumentException ignored) {
+            return null;
+        }
+    }
+
+    private boolean invokeLegacyMouseClicked(Element element, double mouseX, double mouseY, int button) {
+        try {
+            Method method = element.getClass().getMethod("mouseClicked", double.class, double.class, int.class);
+            Object result = method.invoke(element, mouseX, mouseY, button);
+            return Boolean.TRUE.equals(result);
+        } catch (ReflectiveOperationException | IllegalArgumentException ignored) {
+            return false;
+        }
+    }
+
+    private boolean invokeModernMouseClicked(Element element, Object click) {
+        try {
+            Method method = element.getClass().getMethod("mouseClicked", click.getClass(), boolean.class);
+            Object result = method.invoke(element, click, false);
+            return Boolean.TRUE.equals(result);
+        } catch (ReflectiveOperationException | IllegalArgumentException ignored) {
+            return false;
+        }
     }
 
     @Override
