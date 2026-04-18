@@ -29,3 +29,6 @@ run/
 
 # local compatibility logs
 compat-logs/
+
+# local release artifacts
+release/

@@ -87,6 +87,31 @@ CI is included in `.github/workflows/compat-1-21.yml`:
 - PR/Push: representative smoke matrix (`1.21.1`, `1.21.4`, `1.21.8`, `1.21.11`)
 - Schedule/Manual: full stable `1.21.x` matrix
 
+### 5) Build all Modrinth jars for 1.21.x
+
+Use the release script:
+
+```bash
+./scripts/build-release-1.21.sh --base-version 1.1.0
+```
+
+This creates one jar per patch under `release/1.21.x/<mc-version>/` and a manifest file:
+
+- `release/1.21.x/modrinth-upload.csv`
+
+Useful options:
+
+```bash
+# build only selected targets
+./scripts/build-release-1.21.sh --base-version 1.1.0 1.21.8 1.21.11
+
+# include sources jars too
+./scripts/build-release-1.21.sh --base-version 1.1.0 --include-sources
+
+# preview commands without building
+./scripts/build-release-1.21.sh --base-version 1.1.0 --dry-run
+```
+
 ## Usage
 
 1. **Select a Pack**:
