@@ -1,5 +1,6 @@
 {
     "category.quickresourcepack": "Quick Resource Pack",
+    "key.categories.quick-resource-pack.keys": "Quick Resource Pack",
 
     "key.quickresourcepack.toggle": "Toggle Quick Resource Pack",
     "key.quickresourcepack.open_menu": "Open Quick Menu",
