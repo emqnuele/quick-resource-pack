@@ -112,6 +112,31 @@ Useful options:
 ./scripts/build-release-1.21.sh --base-version 1.1.0 --dry-run
 ```
 
+### 6) Publish versions to Modrinth via API
+
+After generating jars (`release/1.21.x/...`), publish with:
+
+```bash
+export MODRINTH_TOKEN="your_modrinth_api_token"
+./scripts/publish_modrinth_releases.py \
+    --project quick-resource-pack \
+    --manifest release/1.21.x/modrinth-upload.csv \
+    --notes MODRINTH_RELEASE_1.1.0.md
+```
+
+Useful options:
+
+```bash
+# dry-run without uploading
+./scripts/publish_modrinth_releases.py --project quick-resource-pack --dry-run
+
+# upload only one patch build
+./scripts/publish_modrinth_releases.py --project quick-resource-pack --only 1.21.11
+
+# skip default dependencies if needed
+./scripts/publish_modrinth_releases.py --project quick-resource-pack --no-default-deps
+```
+
 ## Usage
 
 1. **Select a Pack**:

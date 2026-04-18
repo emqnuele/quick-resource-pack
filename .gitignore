@@ -20,6 +20,10 @@ out/
 
 # VS Code
 .vscode/
+.venv/
+venv/
+env/
+.claude/
 
 # MacOS
 .DS_Store
