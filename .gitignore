@@ -36,3 +36,6 @@ compat-logs/
 
 # local release artifacts
 release/
+
+# secrets (never commit tokens)
+.env
