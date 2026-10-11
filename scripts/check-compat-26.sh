@@ -9,7 +9,7 @@ GW_CMD=${GW_CMD:-./gw25}
 FAIL_FAST=0
 declare -a TARGETS=()
 
-declare -a DEFAULT_TARGETS=("26.1" "26.1.1" "26.1.2" "26.2")
+declare -a DEFAULT_TARGETS=("26.1" "26.1.1" "26.1.2" "26.2" "26.3")
 
 usage() {
   cat <<'EOF'
@@ -17,11 +17,11 @@ usage: ./scripts/check-compat-26.sh [--gw <path>] [--fail-fast] [26.x ...]
 
 runs compile checks across minecraft 26.x versions by resolving:
 - latest fabric-api build matching each target patch
-- latest cloth-config build matching each target minor line (26.1, 26.2)
+- latest cloth-config build matching each target minor line (26.1, 26.2, 26.3)
 - pinned mod menu version per minor line
 
 notes:
-- target "26" is treated as alias for latest known 26.x target (currently 26.2)
+- target "26" is treated as alias for latest known 26.x target (currently 26.3)
 
 examples:
   ./scripts/check-compat-26.sh
@@ -149,6 +149,7 @@ mod_menu_for() {
   case "$(minor_line_of "$1")" in
     26.1) echo "18.0.0-alpha.8" ;;
     26.2) echo "20.0.3" ;;
+    26.3) echo "21.0.0" ;;
     *) echo "" ;;
   esac
 }

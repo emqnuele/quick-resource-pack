@@ -47,3 +47,10 @@
 - porting to minecraft 26.2
 - screen handling follows the game move from Minecraft to Gui, key defaults use input constants (no more GLFW)
 - dependency updates for fabric api, cloth config and modmenu on 26.2
+
+### Quick Resource Pack 1.2.0-mc26.3 (MC 26.3)
+
+### Changelog
+- porting to minecraft 26.3
+- same Gui-based screen handling and input constants as 26.2
+- dependency updates for fabric api, cloth config and modmenu on 26.3

@@ -22,10 +22,10 @@ A Fabric mod for Minecraft that allows you to quickly toggle a specific resource
 
 ## Development Setup (Fedora/Linux)
 
-`main` targets Minecraft 26.2 with Java 25. The 1.21.x line is maintenance-only
+`main` targets Minecraft 26.3 with Java 25. The 1.21.x line is maintenance-only
 on its own branches (`release/1.21.x`, `1.21-maintenance`).
 
-- Java 25 for active development on Minecraft 26.2 (`./gw25`)
+- Java 25 for active development on Minecraft 26.3 (`./gw25`)
 - Java 21 only for the 1.21.x maintenance line (`./gw21`)
 
 ### 1) Install both JDKs
@@ -179,10 +179,10 @@ export MODRINTH_TOKEN="your_modrinth_api_token"
 
 Notes:
 
-- The current stable targets are `26.1`, `26.1.1`, `26.1.2`, `26.2`.
-- `26` is treated as an alias to latest known 26.x target (`26.2`) in scripts.
-- `gradle.properties` defaults to `26.2`; the release scripts override versions per target.
-- APIs that differ between minor lines live in `src/compat/<minor>/java` (e.g. `src/compat/26.1`, `src/compat/26.2`). `build.gradle` picks the folder matching `minecraft_version`, so supporting a new minor line means adding a folder there.
+- The current stable targets are `26.1`, `26.1.1`, `26.1.2`, `26.2`, `26.3`.
+- `26` is treated as an alias to latest known 26.x target (`26.3`) in scripts.
+- `gradle.properties` defaults to `26.3`; the release scripts override versions per target.
+- APIs that differ between minor lines live in `src/compat/<minor>/java` (e.g. `src/compat/26.1`, `src/compat/26.3`). `build.gradle` picks the folder matching `minecraft_version`, so supporting a new minor line means adding a folder there.
 
 ## Usage
 
