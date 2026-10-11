@@ -125,9 +125,9 @@ declare -a TARGET_ROWS=()
 declare -a KNOWN_TARGETS=()
 declare -a NORMALIZED_REQUESTED_TARGETS=()
 
-for requested in "${REQUESTED_TARGETS[@]}"; do
+for requested in ${REQUESTED_TARGETS[@]:-}; do
   normalized=$(normalize_target "$requested")
-  if ! contains_target "$normalized" "${NORMALIZED_REQUESTED_TARGETS[@]}"; then
+  if ! contains_target "$normalized" ${NORMALIZED_REQUESTED_TARGETS[@]:-}; then
     NORMALIZED_REQUESTED_TARGETS+=("$normalized")
   fi
 done
@@ -136,7 +136,7 @@ while IFS='|' read -r mc fabric cloth modmenu; do
   [[ -z "$mc" ]] && continue
   KNOWN_TARGETS+=("$mc")
 
-  if [[ ${#NORMALIZED_REQUESTED_TARGETS[@]} -eq 0 ]] || contains_target "$mc" "${NORMALIZED_REQUESTED_TARGETS[@]}"; then
+  if [[ ${#NORMALIZED_REQUESTED_TARGETS[@]} -eq 0 ]] || contains_target "$mc" ${NORMALIZED_REQUESTED_TARGETS[@]:-}; then
     TARGET_ROWS+=("$mc|$fabric|$cloth|$modmenu")
   fi
 done <<< "$MATRIX"
@@ -146,7 +146,7 @@ if [[ ${#TARGET_ROWS[@]} -eq 0 ]]; then
   exit 2
 fi
 
-for target in "${NORMALIZED_REQUESTED_TARGETS[@]}"; do
+for target in ${NORMALIZED_REQUESTED_TARGETS[@]:-}; do
   if ! contains_target "$target" "${KNOWN_TARGETS[@]}"; then
     echo "unsupported target: $target" >&2
     echo "known targets: ${KNOWN_TARGETS[*]}" >&2

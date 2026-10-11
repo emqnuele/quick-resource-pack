@@ -114,7 +114,7 @@ while IFS='|' read -r mc yarn fabric cloth modmenu; do
   [[ -z "$mc" ]] && continue
   KNOWN_TARGETS+=("$mc")
 
-  if [[ ${#REQUESTED_TARGETS[@]} -eq 0 ]] || contains_target "$mc" "${REQUESTED_TARGETS[@]}"; then
+  if [[ ${#REQUESTED_TARGETS[@]} -eq 0 ]] || contains_target "$mc" ${REQUESTED_TARGETS[@]:-}; then
     TARGET_ROWS+=("$mc|$yarn|$fabric|$cloth|$modmenu")
   fi
 done <<< "$MATRIX"
@@ -124,7 +124,7 @@ if [[ ${#TARGET_ROWS[@]} -eq 0 ]]; then
   exit 2
 fi
 
-for target in "${REQUESTED_TARGETS[@]}"; do
+for target in ${REQUESTED_TARGETS[@]:-}; do
   if ! contains_target "$target" "${KNOWN_TARGETS[@]}"; then
     echo "unsupported target: $target" >&2
     echo "known targets: ${KNOWN_TARGETS[*]}" >&2
