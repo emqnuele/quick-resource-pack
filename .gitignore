@@ -18,6 +18,9 @@ bin/
 *.iws
 out/
 
+# secrets (never commit tokens)
+.env
+
 # VS Code
 .vscode/
 .venv/
