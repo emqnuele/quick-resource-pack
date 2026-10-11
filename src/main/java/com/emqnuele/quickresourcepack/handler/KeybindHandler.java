@@ -1,14 +1,16 @@
 package com.emqnuele.quickresourcepack.handler;
 
 import com.emqnuele.quickresourcepack.QuickResourcePackMod;
+import com.emqnuele.quickresourcepack.compat.ScreenCompat;
 import com.emqnuele.quickresourcepack.core.KeybindGuard;
 import com.emqnuele.quickresourcepack.screen.QuickMenuScreen;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public final class KeybindHandler {
     private KeybindHandler() {
@@ -23,12 +25,12 @@ public final class KeybindHandler {
 
         toggleBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.quickresourcepack.toggle",
-                GLFW.GLFW_KEY_R,
+                InputConstants.KEY_R,
                 category));
 
         menuBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.quickresourcepack.open_menu",
-                GLFW.GLFW_KEY_UNKNOWN,
+                InputConstants.UNKNOWN.getValue(),
                 category));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -43,21 +45,22 @@ public final class KeybindHandler {
                 menuPressed = true;
             }
 
-            if (togglePressed && KeybindGuard.shouldHandleToggle(client.screen != null, client.player != null)) {
+            if (togglePressed && KeybindGuard.shouldHandleToggle(ScreenCompat.getScreen(client) != null, client.player != null)) {
                 ResourcePackHandler.togglePack();
             }
 
             if (menuPressed) {
-                boolean quickMenuOpen = client.screen instanceof QuickMenuScreen;
-                if (KeybindGuard.shouldHandleMenu(client.screen != null, quickMenuOpen)) {
-                    setScreen(client, quickMenuOpen ? null : new QuickMenuScreen(client.screen));
+                Screen current = ScreenCompat.getScreen(client);
+                boolean quickMenuOpen = current instanceof QuickMenuScreen;
+                if (KeybindGuard.shouldHandleMenu(current != null, quickMenuOpen)) {
+                    setScreen(client, quickMenuOpen ? null : new QuickMenuScreen(current));
                 }
             }
         });
     }
 
-    private static void setScreen(Minecraft client, net.minecraft.client.gui.screens.Screen screen) {
-        client.setScreen(screen);
+    private static void setScreen(Minecraft client, Screen screen) {
+        ScreenCompat.setScreen(client, screen);
     }
 
     public static KeyMapping getToggleBinding() {

@@ -1,5 +1,5 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version '1.16-SNAPSHOT'
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
 
@@ -37,15 +37,31 @@ dependencies {
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
+def mcVersionParts = project.minecraft_version.tokenize('.')
+def mcMinorVersion = "${mcVersionParts[0]}.${mcVersionParts[1]}"
+
+// restrict each jar to the minor line it was built for (e.g. 26.2 -> ">=26.2 <26.3")
+def minecraftDependency = project.findProperty("minecraft_dependency")
+		?: ">=${mcMinorVersion} <${mcVersionParts[0]}.${(mcVersionParts[1] as int) + 1}"
+
+// version-specific shims for apis that moved between minor lines
+def compatSourceDir = file("src/compat/${mcMinorVersion}/java")
+if (!compatSourceDir.isDirectory()) {
+	throw new GradleException("no compat sources for minecraft ${mcMinorVersion}: expected ${compatSourceDir}")
+}
+sourceSets.main.java.srcDir compatSourceDir
+
 processResources {
 	inputs.property "version", project.version
 	inputs.property "minecraft_version", project.minecraft_version
+	inputs.property "minecraft_dependency", minecraftDependency
 	inputs.property "loader_version", project.loader_version
 	filteringCharset "UTF-8"
 
 	filesMatching("fabric.mod.json") {
 		expand "version": project.version,
 				"minecraft_version": project.minecraft_version,
+				"minecraft_dependency": minecraftDependency,
 				"loader_version": project.loader_version
 	}
 }

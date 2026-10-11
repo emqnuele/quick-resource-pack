@@ -39,3 +39,7 @@ compat-logs/
 
 # local release artifacts
 release/
+
+# python bytecode (release script validation)
+__pycache__/
+*.pyc

@@ -22,10 +22,10 @@ A Fabric mod for Minecraft that allows you to quickly toggle a specific resource
 
 ## Development Setup (Fedora/Linux)
 
-`main` targets Minecraft 26.1.x with Java 25. The 1.21.x line is maintenance-only
+`main` targets Minecraft 26.2 with Java 25. The 1.21.x line is maintenance-only
 on its own branches (`release/1.21.x`, `1.21-maintenance`).
 
-- Java 25 for active development on Minecraft 26.1.x (`./gw25`)
+- Java 25 for active development on Minecraft 26.2 (`./gw25`)
 - Java 21 only for the 1.21.x maintenance line (`./gw21`)
 
 ### 1) Install both JDKs
@@ -71,7 +71,7 @@ The wrappers automatically use these variables when present.
 Game-free logic lives in `com.emqnuele.quickresourcepack.core` and must not
 import `net.minecraft` / `com.mojang` — `checkCorePurity` fails the build if it
 does. CI (`.github/workflows/build-26.yml`) runs `check`, builds the jars and
-compiles against every 26.1.x target.
+compiles against every 26.x target.
 
 ### 4) Verify compatibility across 1.21.x (maintenance line only)
 
@@ -151,7 +151,7 @@ Useful options:
 ./scripts/publish_modrinth_releases.py --project quick-resource-pack --no-default-deps
 ```
 
-### 7) Check and build all 26.1.x releases
+### 7) Check and build all 26.x releases
 
 Run compatibility checks for the 26.x line:
 
@@ -179,8 +179,10 @@ export MODRINTH_TOKEN="your_modrinth_api_token"
 
 Notes:
 
-- The current stable targets are `26.1`, `26.1.1`, `26.1.2`.
-- `26` is treated as an alias to latest known 26.x target in scripts.
+- The current stable targets are `26.1`, `26.1.1`, `26.1.2`, `26.2`.
+- `26` is treated as an alias to latest known 26.x target (`26.2`) in scripts.
+- `gradle.properties` defaults to `26.2`; the release scripts override versions per target.
+- APIs that differ between minor lines live in `src/compat/<minor>/java` (e.g. `src/compat/26.1`, `src/compat/26.2`). `build.gradle` picks the folder matching `minecraft_version`, so supporting a new minor line means adding a folder there.
 
 ## Usage
 

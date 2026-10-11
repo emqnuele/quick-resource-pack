@@ -40,3 +40,10 @@
 - fix: failed reloads no longer wedge the toggle
 - fix: corrupt config is backed up to .bak and reset instead of crashing
 - quality: unit-tested core logic, hardened config handling, corrected docs
+
+### Quick Resource Pack 1.2.0-mc26.2 (MC 26.2)
+
+### Changelog
+- porting to minecraft 26.2
+- screen handling follows the game move from Minecraft to Gui, key defaults use input constants (no more GLFW)
+- dependency updates for fabric api, cloth config and modmenu on 26.2

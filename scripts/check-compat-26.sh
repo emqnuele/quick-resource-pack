@@ -9,19 +9,24 @@ GW_CMD=${GW_CMD:-./gw25}
 FAIL_FAST=0
 declare -a TARGETS=()
 
-declare -a DEFAULT_TARGETS=("26.1" "26.1.1" "26.1.2")
+declare -a DEFAULT_TARGETS=("26.1" "26.1.1" "26.1.2" "26.2")
 
 usage() {
   cat <<'EOF'
 usage: ./scripts/check-compat-26.sh [--gw <path>] [--fail-fast] [26.x ...]
 
-runs compile checks across minecraft 26.1.x versions by resolving:
+runs compile checks across minecraft 26.x versions by resolving:
 - latest fabric-api build matching each target patch
-- latest cloth-config build on 26.x line
-- pinned mod menu version for 26.x
+- latest cloth-config build matching each target minor line (26.1, 26.2)
+- pinned mod menu version per minor line
 
 notes:
-- target "26" is treated as alias for latest known 26.x target (currently 26.1.2)
+- target "26" is treated as alias for latest known 26.x target (currently 26.2)
+
+examples:
+  ./scripts/check-compat-26.sh
+  ./scripts/check-compat-26.sh 26.1 26.1.2
+  ./scripts/check-compat-26.sh 26.2
 
 examples:
   ./scripts/check-compat-26.sh
@@ -126,21 +131,27 @@ latest_fabric_api_for() {
     | tail -n 1
 }
 
-latest_cloth_for_26() {
+minor_line_of() {
+  echo "$1" | cut -d. -f1-2
+}
+
+latest_cloth_for() {
+  local minor_line
+  minor_line=$(minor_line_of "$1")
   grep -oE '<version>[^<]+</version>' "$CLOTH_METADATA_FILE" \
     | sed -e 's#<version>##' -e 's#</version>##' \
-    | grep '^26\.' \
+    | grep -E "^${minor_line//./\\.}\.[0-9]+$" \
     | sort -V \
     | tail -n 1
 }
 
-CLOTH_VERSION=$(latest_cloth_for_26 || true)
-if [[ -z "$CLOTH_VERSION" ]]; then
-  echo "unable to resolve cloth config for 26.x" >&2
-  exit 1
-fi
-
-MOD_MENU_VERSION="18.0.0-alpha.8"
+mod_menu_for() {
+  case "$(minor_line_of "$1")" in
+    26.1) echo "18.0.0-alpha.8" ;;
+    26.2) echo "20.0.3" ;;
+    *) echo "" ;;
+  esac
+}
 
 LOG_DIR="$ROOT_DIR/compat-logs"
 mkdir -p "$LOG_DIR"
@@ -151,10 +162,12 @@ printf "%-10s %-24s %-12s %-14s %-8s\n" "----------" "------------------------" 
 
 for game_version in "${NORMALIZED_TARGETS[@]}"; do
   fabric_api_version=$(latest_fabric_api_for "$game_version" || true)
+  CLOTH_VERSION=$(latest_cloth_for "$game_version" || true)
+  MOD_MENU_VERSION=$(mod_menu_for "$game_version")
 
-  if [[ -z "$fabric_api_version" ]]; then
-    printf "%-10s %-24s %-12s %-14s %-8s\n" "$game_version" "n/a" "$CLOTH_VERSION" "$MOD_MENU_VERSION" "fail"
-    echo "  unresolved fabric-api metadata for $game_version"
+  if [[ -z "$fabric_api_version" || -z "$CLOTH_VERSION" || -z "$MOD_MENU_VERSION" ]]; then
+    printf "%-10s %-24s %-12s %-14s %-8s\n" "$game_version" "${fabric_api_version:-n/a}" "${CLOTH_VERSION:-n/a}" "${MOD_MENU_VERSION:-n/a}" "fail"
+    echo "  unresolved dependency metadata for $game_version"
     failures=$((failures + 1))
     if [[ $FAIL_FAST -eq 1 ]]; then
       break
