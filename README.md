@@ -1,208 +1,76 @@
 # Quick Resource Pack
 
-A Fabric mod for Minecraft that allows you to quickly toggle a specific resource pack on and off using a keybind. Perfect for quickly changing textures or switching between without navigating deep into menus.
+A Fabric mod that lets you toggle a chosen resource pack on and off with a
+single keybind — no menu diving. Pick a pack once, then switch it instantly
+whenever you like.
 
 ## Features
 
-- **Quick Toggle**: Press a key (Default: `R`) to instantly enable or disable your selected resource pack.
-- **Async Loading**: Loads resource packs in the background to minimize game freezes.
-- **Configuration Menu**: Easily select which pack to toggle via ModMenu and Cloth Config.
-- **In-Game Notifications**: Get feedback when a pack is enabled, disabled, or loading.
-- **Quick Menu**: An optional unbound keybind opens a small in-game menu with toggle, pack picker shortcut and notification/auto-apply switches.
+- **Quick Toggle**: press a key (default: `R`) to instantly enable or disable
+  your selected resource pack.
+- **Quick Menu**: an optional keybind (unbound by default) opens a small
+  in-game menu with the toggle, a pack picker shortcut and
+  notification/auto-apply switches.
+- **Configuration screen**: pick the pack from a dropdown via Mod Menu and
+  Cloth Config.
+- **Async reload**: packs reload in the background to minimize game freezes.
+- **In-game notifications**: chat feedback when a pack is enabled, disabled
+  or still loading.
+- **Screen-safe keybinds**: the toggle never fires while you are typing in
+  chat or have any screen open, and queued presses are drained so they do
+  not retrigger later.
+
+## Requirements
+
+- [Fabric Loader](https://fabricmc.net/)
+- [Fabric API](https://modrinth.com/mod/fabric-api)
+- [Cloth Config API](https://modrinth.com/mod/cloth-config)
+- [Mod Menu](https://modrinth.com/mod/modmenu) (optional, recommended — it
+  hosts the configuration screen)
+
+Grab the file built for your exact Minecraft version from the
+[Modrinth project](https://modrinth.com/mod/quick-resource-pack).
 
 ## Installation
 
-1. Install **Fabric Loader**.
-2. Download the mod `.jar` file.
-3. Place the file in your `mods` folder.
-4. Ensure you have the following dependencies installed:
-    - [Fabric API](https://modrinth.com/mod/fabric-api)
-    - [Cloth Config API](https://modrinth.com/mod/cloth-config)
-    - [Mod Menu](https://modrinth.com/mod/modmenu) (optional, recommended)
-
-## Development Setup (Fedora/Linux)
-
-`main` targets Minecraft 26.3 with Java 25. The 1.21.x line is maintenance-only
-on its own branches (`release/1.21.x`, `1.21-maintenance`).
-
-- Java 25 for active development on Minecraft 26.3 (`./gw25`)
-- Java 21 only for the 1.21.x maintenance line (`./gw21`)
-
-### 1) Install both JDKs
-
-```bash
-sudo dnf install java-21-openjdk-devel java-25-openjdk-devel
-```
-
-### 2) Use project wrappers
-
-Run Gradle through the provided wrappers:
-
-```bash
-./gw25 tasks --all
-./gw25 runClient
-./gw25 build
-./gw25 check   # unit tests + core purity
-```
-
-`gw25` forces Gradle to run on Java 25, regardless of your system default Java.
-
-For maintenance work on the 1.21.x line:
-
-```bash
-./gw21 --version
-```
-
-### 3) Optional custom JDK paths
-
-If your JDKs are not in standard Fedora paths, set:
-
-- `JAVA21_HOME`
-- `JAVA25_HOME`
-
-The wrappers automatically use these variables when present.
-
-### 3b) Tests
-
-```bash
-./gw25 check   # JUnit unit tests (src/test) + checkCorePurity
-```
-
-Game-free logic lives in `com.emqnuele.quickresourcepack.core` and must not
-import `net.minecraft` / `com.mojang` — `checkCorePurity` fails the build if it
-does. CI (`.github/workflows/build-26.yml`) runs `check`, builds the jars and
-compiles against every 26.x target.
-
-### 4) Verify compatibility across 1.21.x (maintenance line only)
-
-Run the compatibility checker script:
-
-```bash
-./scripts/check-compat-1.21.sh
-```
-
-What it does for each stable `1.21.x` release:
-
-- Resolves latest Yarn mappings for that patch
-- Resolves latest Fabric API build for that patch
-- Selects patch-aligned Cloth Config and Mod Menu versions
-- Runs `clean compileJava` with version overrides via `gw21`
-- Writes per-version logs under `compat-logs/`
-
-You can also run a targeted subset while developing:
-
-```bash
-./scripts/check-compat-1.21.sh 1.21.4 1.21.11
-```
-
-CI is included in `.github/workflows/compat-1-21.yml` (maintenance branches only,
-never `main`):
-
-- PR/Push: representative smoke matrix (`1.21.1`, `1.21.4`, `1.21.8`, `1.21.11`)
-- Schedule/Manual: full stable `1.21.x` matrix
-
-### 5) Build all Modrinth jars for 1.21.x
-
-Use the release script:
-
-```bash
-./scripts/build-release-1.21.sh --base-version 1.1.0
-```
-
-This creates one jar per patch under `release/1.21.x/<mc-version>/` and a manifest file:
-
-- `release/1.21.x/modrinth-upload.csv`
-
-Useful options:
-
-```bash
-# build only selected targets
-./scripts/build-release-1.21.sh --base-version 1.1.0 1.21.8 1.21.11
-
-# include sources jars too
-./scripts/build-release-1.21.sh --base-version 1.1.0 --include-sources
-
-# preview commands without building
-./scripts/build-release-1.21.sh --base-version 1.1.0 --dry-run
-```
-
-### 6) Publish versions to Modrinth via API
-
-After generating jars (`release/1.21.x/...`), publish with:
-
-```bash
-export MODRINTH_TOKEN="your_modrinth_api_token"
-./scripts/publish_modrinth_releases.py \
-    --project quick-resource-pack \
-    --manifest release/1.21.x/modrinth-upload.csv \
-    --notes MODRINTH_RELEASE_1.1.0.md
-```
-
-Useful options:
-
-```bash
-# dry-run without uploading
-./scripts/publish_modrinth_releases.py --project quick-resource-pack --dry-run
-
-# upload only one patch build
-./scripts/publish_modrinth_releases.py --project quick-resource-pack --only 1.21.11
-
-# skip default dependencies if needed
-./scripts/publish_modrinth_releases.py --project quick-resource-pack --no-default-deps
-```
-
-### 7) Check and build all 26.x releases
-
-Run compatibility checks for the 26.x line:
-
-```bash
-./scripts/check-compat-26.sh
-```
-
-Build all patch-specific jars for Modrinth:
-
-```bash
-./scripts/build-release-26.sh --base-version 1.2.0
-```
-
-This writes artifacts and manifest to:
-
-- `release/26.x/<mc-version>/...`
-- `release/26.x/modrinth-upload.csv`
-
-Publish using the wrapper script:
-
-```bash
-export MODRINTH_TOKEN="your_modrinth_api_token"
-./scripts/publish-release-26.sh
-```
-
-Notes:
-
-- The current stable targets are `26.1`, `26.1.1`, `26.1.2`, `26.2`, `26.3`.
-- `26` is treated as an alias to latest known 26.x target (`26.3`) in scripts.
-- `gradle.properties` defaults to `26.3`; the release scripts override versions per target.
-- APIs that differ between minor lines live in `src/compat/<minor>/java` (e.g. `src/compat/26.1`, `src/compat/26.3`). `build.gradle` picks the folder matching `minecraft_version`, so supporting a new minor line means adding a folder there.
+1. Install Fabric Loader for your Minecraft version.
+2. Download the Quick Resource Pack `.jar` matching your game version.
+3. Place it, together with the requirements above, in your `mods` folder.
+4. Launch the game.
 
 ## Usage
 
-1. **Select a Pack**:
-    - Go to `Mods` > `Quick Resource Pack` > `Configure`.
-    - Select your desired resource pack from the dropdown list.
-2. **Toggle**:
-    - Press `R` (configurable in Keybinds) to toggle the selected pack on or off.
-    - The toggle only fires while playing with no screen open: typing in chat
-      never triggers it.
-    - An extra `Open Quick Menu` keybind (unbound by default) opens a small
-      in-game menu with the same options.
+1. **Select a pack**: go to `Mods` > `Quick Resource Pack` > `Configure`
+   and choose a pack from the dropdown list.
+2. **Toggle**: press `R` (rebindable under `Controls` > `Key Binds`) to
+   switch the selected pack on or off.
+3. **Quick menu** (optional): bind `Open Quick Menu` to get a small in-game
+   panel with the same options.
 
 ## Configuration
 
-The config file is located at `config/quickresourcepack.json`. You can also edit it via the Mod Menu integration.
+Settings live in `config/quickresourcepack.json` (editable in-game through
+the Mod Menu screen):
 
-- `selectedResourcePack`: The unique name of the resource pack to toggle.
-- `showNotifications`: Enable/disable in-game chat notifications.
-- `autoApplyOnStart`: Automatically apply the selected pack when the game starts.
+- `selectedResourcePack`: unique name of the pack to toggle (default: empty,
+  i.e. none selected).
+- `showNotifications`: chat feedback on toggle (default: on).
+- `autoApplyOnStart`: apply the selected pack when the game starts
+  (default: off).
+
+A corrupt config file is backed up to `.bak` and reset to defaults instead
+of crashing.
+
+## Support
+
+- Bug reports and ideas:
+  [GitHub issues](https://github.com/emqnuele/quick-resource-pack/issues)
+- Downloads and changelogs:
+  [Modrinth](https://modrinth.com/mod/quick-resource-pack)
+
+## Developers
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for build, test and release notes.
 
 ## License
 
