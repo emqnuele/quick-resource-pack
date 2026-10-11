@@ -17,6 +17,7 @@ MATRIX=$(cat <<'EOF'
 26.1|0.145.1+26.1|26.1.154|18.0.0-alpha.8
 26.1.1|0.145.4+26.1.1|26.1.154|18.0.0-alpha.8
 26.1.2|0.146.1+26.1.2|26.1.154|18.0.0-alpha.8
+26.3|0.162.0+26.3|26.3.159|21.0.0
 EOF
 )
 
@@ -24,14 +25,14 @@ usage() {
   cat <<'EOF'
 usage: ./scripts/build-release-26.sh [options] [26.x ...]
 
-builds modrinth-ready jars for minecraft 26.1.x.
+builds modrinth-ready jars for minecraft 26.x (26.1.x and 26.3).
 
 the output layout is:
 - release/26.x/<mc-version>/quick-resource-pack-<mod-version>-mc<mc-version>.jar
 - release/26.x/modrinth-upload.csv
 
 notes:
-- target "26" is treated as alias of latest known 26.x target (currently 26.1.2)
+- target "26" is treated as alias of latest known 26.x target (currently 26.3)
 
 options:
   --base-version <v>   base mod version (default: mod_version from gradle.properties)
@@ -44,6 +45,7 @@ options:
 examples:
   ./scripts/build-release-26.sh --base-version 1.2.0
   ./scripts/build-release-26.sh --base-version 1.2.0 26.1 26.1.2
+  ./scripts/build-release-26.sh --base-version 1.2.0 26.3
 EOF
 }
 
@@ -91,7 +93,7 @@ fi
 
 if [[ $INCLUDE_MAJOR_TAG -eq 1 ]]; then
   echo "--include-major-tag is unsupported: Modrinth rejects plain '26' in game_versions" >&2
-  echo "use patch versions only (26.1, 26.1.1, 26.1.2)" >&2
+  echo "use patch versions only (26.1, 26.1.1, 26.1.2, 26.3)" >&2
   exit 2
 fi
 
@@ -115,7 +117,7 @@ contains_target() {
 normalize_target() {
   local target="$1"
   if [[ "$target" == "26" ]]; then
-    echo "26.1.2"
+    echo "26.3"
     return 0
   fi
   echo "$target"

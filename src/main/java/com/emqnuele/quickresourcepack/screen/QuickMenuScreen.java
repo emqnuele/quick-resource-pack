@@ -1,5 +1,6 @@
 package com.emqnuele.quickresourcepack.screen;
 
+import com.emqnuele.quickresourcepack.compat.ScreenCompat;
 import com.emqnuele.quickresourcepack.config.ClothConfigScreen;
 import com.emqnuele.quickresourcepack.config.ModConfig;
 import com.emqnuele.quickresourcepack.handler.ResourcePackHandler;
@@ -42,7 +43,7 @@ public class QuickMenuScreen extends Screen {
         y += BUTTON_H + GAP;
         this.selectedPackButton = this.addRenderableWidget(Button.builder(
                         selectedPackText(),
-                        button -> this.minecraft.setScreen(ClothConfigScreen.createConfigScreen(this)))
+                        button -> ScreenCompat.setScreen(this.minecraft, ClothConfigScreen.createConfigScreen(this)))
                 .bounds(x, y, BUTTON_W, BUTTON_H)
                 .build());
 
@@ -85,7 +86,7 @@ public class QuickMenuScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.parent);
+        ScreenCompat.setScreen(this.minecraft, this.parent);
     }
 
     private Component selectedPackText() {

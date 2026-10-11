@@ -98,7 +98,7 @@ def parse_notes_new_format(text: str) -> Dict[str, ReleaseNote]:
     notes: Dict[str, ReleaseNote] = {}
     matches = list(
         re.finditer(
-            r"^###\s+(?P<title>.+\(MC\s+(?P<mc>\d+\.\d+\.\d+)\))\s*$",
+            r"^###\s+(?P<title>.+\(MC\s+(?P<mc>\d+\.\d+(?:\.\d+)?)\))\s*$",
             text,
             flags=re.MULTILINE,
         )
@@ -120,7 +120,7 @@ def parse_notes_new_format(text: str) -> Dict[str, ReleaseNote]:
 def parse_notes_legacy_format(text: str) -> Dict[str, ReleaseNote]:
     notes: Dict[str, ReleaseNote] = {}
     section_matches = list(
-        re.finditer(r"^##\s+MC\s+(?P<mc>\d+\.\d+\.\d+)\s*$", text, flags=re.MULTILINE)
+        re.finditer(r"^##\s+MC\s+(?P<mc>\d+\.\d+(?:\.\d+)?)\s*$", text, flags=re.MULTILINE)
     )
 
     for index, match in enumerate(section_matches):
@@ -157,7 +157,7 @@ def read_release_notes(notes_path: Path) -> Dict[str, ReleaseNote]:
 
     if not notes:
         raise UploadError(
-            "unable to parse release notes; expected sections like '### Quick Resource Pack ... (MC x.y.z)'"
+            "unable to parse release notes; expected sections like '### Quick Resource Pack ... (MC x.y[.z])'"
         )
 
     return notes

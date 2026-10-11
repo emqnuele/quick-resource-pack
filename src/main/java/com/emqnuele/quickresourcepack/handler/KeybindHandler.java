@@ -1,12 +1,14 @@
 package com.emqnuele.quickresourcepack.handler;
 
 import com.emqnuele.quickresourcepack.QuickResourcePackMod;
+import com.emqnuele.quickresourcepack.compat.ScreenCompat;
 import com.emqnuele.quickresourcepack.screen.QuickMenuScreen;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public class KeybindHandler {
 
@@ -20,13 +22,13 @@ public class KeybindHandler {
 
         TOGGLE_BINDING = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.quickresourcepack.toggle",
-                GLFW.GLFW_KEY_R,
+                InputConstants.KEY_R,
                 category
         ));
 
         MENU_BINDING = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.quickresourcepack.open_menu",
-                GLFW.GLFW_KEY_UNKNOWN,
+                InputConstants.UNKNOWN.getValue(),
                 category
         ));
 
@@ -36,10 +38,11 @@ public class KeybindHandler {
             }
 
             while (MENU_BINDING.consumeClick()) {
-                if (client.screen instanceof QuickMenuScreen) {
-                    client.setScreen(null);
+                Screen current = ScreenCompat.getScreen(client);
+                if (current instanceof QuickMenuScreen) {
+                    ScreenCompat.setScreen(client, null);
                 } else {
-                    client.setScreen(new QuickMenuScreen(client.screen));
+                    ScreenCompat.setScreen(client, new QuickMenuScreen(current));
                 }
             }
         });

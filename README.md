@@ -137,7 +137,7 @@ Useful options:
 ./scripts/publish_modrinth_releases.py --project quick-resource-pack --no-default-deps
 ```
 
-### 7) Check and build all 26.1.x releases
+### 7) Check and build all 26.x releases
 
 Run compatibility checks for the 26.x line:
 
@@ -165,8 +165,10 @@ export MODRINTH_TOKEN="your_modrinth_api_token"
 
 Notes:
 
-- The current stable targets are `26.1`, `26.1.1`, `26.1.2`.
-- `26` is treated as an alias to latest known 26.x target in scripts.
+- The current stable targets are `26.1`, `26.1.1`, `26.1.2`, `26.3`.
+- `26` is treated as an alias to latest known 26.x target (`26.3`) in scripts.
+- `gradle.properties` defaults to `26.3`; the release scripts override versions per target.
+- APIs that differ between minor lines live in `src/compat/<minor>/java` (e.g. `src/compat/26.1`, `src/compat/26.3`). `build.gradle` picks the folder matching `minecraft_version`, so supporting a new minor line means adding a folder there.
 
 ## Usage
 
