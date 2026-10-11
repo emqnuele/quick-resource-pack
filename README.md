@@ -8,7 +8,7 @@ A Fabric mod for Minecraft that allows you to quickly toggle a specific resource
 - **Async Loading**: Loads resource packs in the background to minimize game freezes.
 - **Configuration Menu**: Easily select which pack to toggle via ModMenu and Cloth Config.
 - **In-Game Notifications**: Get feedback when a pack is enabled, disabled, or loading.
-- **Pack Screen Integration**: Adds a convenient "Set for Quick Toggle" button directly in the vanilla Resource Pack screen.
+- **Quick Menu**: An optional unbound keybind opens a small in-game menu with toggle, pack picker shortcut and notification/auto-apply switches.
 
 ## Installation
 
@@ -22,10 +22,11 @@ A Fabric mod for Minecraft that allows you to quickly toggle a specific resource
 
 ## Development Setup (Fedora/Linux)
 
-This project uses a dual-JDK workflow:
+`main` targets Minecraft 26.1.x with Java 25. The 1.21.x line is maintenance-only
+on its own branches (`release/1.21.x`, `1.21-maintenance`).
 
-- Java 21 for active development on Minecraft 1.21.x
-- Java 25 kept installed for future migration to 26.x
+- Java 25 for active development on Minecraft 26.1.x (`./gw25`)
+- Java 21 only for the 1.21.x maintenance line (`./gw21`)
 
 ### 1) Install both JDKs
 
@@ -38,17 +39,18 @@ sudo dnf install java-21-openjdk-devel java-25-openjdk-devel
 Run Gradle through the provided wrappers:
 
 ```bash
-./gw21 tasks --all
-./gw21 runClient
-./gw21 build
+./gw25 tasks --all
+./gw25 runClient
+./gw25 build
+./gw25 check   # unit tests + core purity
 ```
 
-`gw21` forces Gradle to run on Java 21, regardless of your system default Java.
+`gw25` forces Gradle to run on Java 25, regardless of your system default Java.
 
-For future migration work, this wrapper is ready as well:
+For maintenance work on the 1.21.x line:
 
 ```bash
-./gw25 --version
+./gw21 --version
 ```
 
 ### 3) Optional custom JDK paths
@@ -60,7 +62,18 @@ If your JDKs are not in standard Fedora paths, set:
 
 The wrappers automatically use these variables when present.
 
-### 4) Verify compatibility across 1.21.x
+### 3b) Tests
+
+```bash
+./gw25 check   # JUnit unit tests (src/test) + checkCorePurity
+```
+
+Game-free logic lives in `com.emqnuele.quickresourcepack.core` and must not
+import `net.minecraft` / `com.mojang` — `checkCorePurity` fails the build if it
+does. CI (`.github/workflows/build-26.yml`) runs `check`, builds the jars and
+compiles against every 26.1.x target.
+
+### 4) Verify compatibility across 1.21.x (maintenance line only)
 
 Run the compatibility checker script:
 
@@ -82,7 +95,8 @@ You can also run a targeted subset while developing:
 ./scripts/check-compat-1.21.sh 1.21.4 1.21.11
 ```
 
-CI is included in `.github/workflows/compat-1-21.yml`:
+CI is included in `.github/workflows/compat-1-21.yml` (maintenance branches only,
+never `main`):
 
 - PR/Push: representative smoke matrix (`1.21.1`, `1.21.4`, `1.21.8`, `1.21.11`)
 - Schedule/Manual: full stable `1.21.x` matrix
@@ -173,18 +187,21 @@ Notes:
 1. **Select a Pack**:
     - Go to `Mods` > `Quick Resource Pack` > `Configure`.
     - Select your desired resource pack from the dropdown list.
-    - Alternatively, go to the vanilla Resource Packs screen, select a pack, and click "Set for Quick Toggle".
 2. **Toggle**:
     - Press `R` (configurable in Keybinds) to toggle the selected pack on or off.
+    - The toggle only fires while playing with no screen open: typing in chat
+      never triggers it.
+    - An extra `Open Quick Menu` keybind (unbound by default) opens a small
+      in-game menu with the same options.
 
 ## Configuration
 
 The config file is located at `config/quickresourcepack.json`. You can also edit it via the Mod Menu integration.
 
 - `selectedResourcePack`: The unique name of the resource pack to toggle.
-- `showNotifications`: Enable/disable in-game toast notifications.
+- `showNotifications`: Enable/disable in-game chat notifications.
 - `autoApplyOnStart`: Automatically apply the selected pack when the game starts.
 
 ## License
 
-ARR License
+MIT — see [LICENSE](LICENSE).

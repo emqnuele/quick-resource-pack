@@ -30,6 +30,11 @@ dependencies {
 
 	// Mod Menu (optional at runtime)
 	compileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
+
+	// Unit tests (JUnit 5, plain JVM, no game needed for core package)
+	testImplementation platform("org.junit:junit-bom:5.11.3")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 processResources {
@@ -69,6 +74,35 @@ jar {
 	from("LICENSE") {
 		rename { "${it}_${project.base.archivesName.get()}" }
 	}
+}
+
+tasks.named('test', Test) {
+	useJUnitPlatform()
+	// Minecraft's log4j config writes logs/ into the working directory
+	def testRun = layout.buildDirectory.dir("test-run").get().asFile
+	doFirst { testRun.mkdirs() }
+	workingDir = testRun
+	testLogging {
+		events "passed", "skipped", "failed"
+		exceptionFormat "full"
+	}
+}
+
+// Game-free logic lives under core and must stay importable without Minecraft:
+// fail the build if it references the game, so unit tests never need to launch it.
+def coreSources = fileTree("src/main/java") { include "**/core/**/*.java" }
+tasks.register('checkCorePurity') {
+	inputs.files coreSources
+	doLast {
+		def offenders = coreSources.files.findAll { it.text =~ /import\s+(static\s+)?(net\.minecraft|com\.mojang)\./ }
+		if (offenders) {
+			throw new GradleException("core must not import the game: ${offenders*.name.join(', ')}")
+		}
+	}
+}
+
+tasks.named('check') {
+	dependsOn 'checkCorePurity'
 }
 
 // configure the maven publication

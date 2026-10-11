@@ -1,0 +1,91 @@
+name: build (minecraft 26.x)
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - src/**
+      - build.gradle
+      - gradle.properties
+      - settings.gradle
+      - gradle/**
+      - gradlew
+      - gw25
+      - scripts/with-java.sh
+      - scripts/check-compat-26.sh
+      - scripts/build-release-26.sh
+      - .github/workflows/build-26.yml
+  push:
+    branches:
+      - main
+    paths:
+      - src/**
+      - build.gradle
+      - gradle.properties
+      - settings.gradle
+      - gradle/**
+      - gradlew
+      - gw25
+      - scripts/with-java.sh
+      - scripts/check-compat-26.sh
+      - scripts/build-release-26.sh
+      - .github/workflows/build-26.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-26-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: ensure script permissions
+        run: chmod +x gradlew gw25 scripts/with-java.sh scripts/check-compat-26.sh scripts/build-release-26.sh
+
+      - name: unit tests and core purity
+        run: ./gw25 --no-daemon check --console=plain
+
+      - name: build jars
+        run: ./gw25 --no-daemon build --console=plain -x test
+
+      - name: upload jars
+        uses: actions/upload-artifact@v4
+        with:
+          name: jars-26.x
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/test/**
+
+  compat-26:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: ensure script permissions
+        run: chmod +x gradlew gw25 scripts/with-java.sh scripts/check-compat-26.sh
+
+      - name: compile against every 26.1.x target
+        run: ./scripts/check-compat-26.sh

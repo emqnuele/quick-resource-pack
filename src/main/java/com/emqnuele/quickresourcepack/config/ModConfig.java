@@ -1,52 +1,70 @@
 package com.emqnuele.quickresourcepack.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.emqnuele.quickresourcepack.QuickResourcePackMod;
+import com.emqnuele.quickresourcepack.core.ModConfigData;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
-public class ModConfig {
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("quickresourcepack.json");
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static ModConfig INSTANCE;
+public final class ModConfig {
+    private ModConfig() {
+    }
 
-    public String selectedResourcePack = "";
-    public boolean showNotifications = true;
-    public boolean autoApplyOnStart = false;
+    private static Path configPath() {
+        return FabricLoader.getInstance().getConfigDir().resolve("quickresourcepack.json");
+    }
 
-    public static ModConfig getInstance() {
-        if (INSTANCE == null) {
+    private static ModConfigData instance;
+
+    public static synchronized ModConfigData getInstance() {
+        if (instance == null) {
             load();
         }
-        return INSTANCE;
+        return instance;
     }
 
-    public static void load() {
-        if (Files.exists(CONFIG_PATH)) {
+    public static synchronized void load() {
+        instance = read(configPath());
+    }
+
+    public static synchronized void save() {
+        if (instance == null) {
+            instance = new ModConfigData();
+        }
+        write(configPath(), instance);
+    }
+
+    /** Reads config from {@code path}; corrupt JSON is backed up and replaced with defaults. */
+    static ModConfigData read(Path path) {
+        if (!Files.exists(path)) {
+            ModConfigData fresh = new ModConfigData();
+            write(path, fresh);
+            return fresh;
+        }
+        try {
+            return ModConfigData.fromJson(Files.readString(path));
+        } catch (IOException | RuntimeException e) {
+            QuickResourcePackMod.LOGGER.error("Failed to load config, resetting to defaults: {}", e.getMessage());
             try {
-                String json = Files.readString(CONFIG_PATH);
-                INSTANCE = GSON.fromJson(json, ModConfig.class);
-                if (INSTANCE == null) {
-                    INSTANCE = new ModConfig();
-                }
-            } catch (IOException e) {
-                QuickResourcePackMod.LOGGER.error("Failed to load config: {}", e.getMessage());
-                INSTANCE = new ModConfig();
+                Path backup = path.resolveSibling(path.getFileName() + ".bak");
+                Files.copy(path, backup, StandardCopyOption.REPLACE_EXISTING);
+                QuickResourcePackMod.LOGGER.warn("Backed up corrupt config to {}", backup);
+            } catch (IOException backupError) {
+                QuickResourcePackMod.LOGGER.error("Failed to back up corrupt config: {}", backupError.getMessage());
             }
-        } else {
-            INSTANCE = new ModConfig();
-            save();
+            ModConfigData fresh = new ModConfigData();
+            write(path, fresh);
+            return fresh;
         }
     }
 
-    public static void save() {
+    static void write(Path path, ModConfigData data) {
         try {
-            Files.createDirectories(CONFIG_PATH.getParent());
-            Files.writeString(CONFIG_PATH, GSON.toJson(INSTANCE));
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, data.toJson());
         } catch (IOException e) {
             QuickResourcePackMod.LOGGER.error("Failed to save config: {}", e.getMessage());
         }

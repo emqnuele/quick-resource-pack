@@ -1,7 +1,14 @@
 name: minecraft 1.21.x compatibility
 
+# Maintenance line only: main targets 26.x (Mojang names) and cannot compile
+# against 1.21.x (Yarn names). This workflow runs on the 1.21 maintenance
+# branches, never on main.
 on:
   pull_request:
+    branches:
+      - 'release/1.21.x'
+      - '1.21-maintenance'
+      - 'fix/keybind-crash-1.21.11'
     paths:
       - src/**
       - build.gradle
@@ -12,8 +19,9 @@ on:
       - .github/workflows/compat-1-21.yml
   push:
     branches:
-      - main
-      - master
+      - 'release/1.21.x'
+      - '1.21-maintenance'
+      - 'fix/keybind-crash-1.21.11'
     paths:
       - src/**
       - build.gradle

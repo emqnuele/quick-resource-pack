@@ -2,6 +2,7 @@ package com.emqnuele.quickresourcepack.screen;
 
 import com.emqnuele.quickresourcepack.config.ClothConfigScreen;
 import com.emqnuele.quickresourcepack.config.ModConfig;
+import com.emqnuele.quickresourcepack.core.ModConfigData;
 import com.emqnuele.quickresourcepack.handler.ResourcePackHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,7 +15,6 @@ public class QuickMenuScreen extends Screen {
 
     private final Screen parent;
 
-    private Button selectedPackButton;
     private Button notificationsButton;
     private Button autoApplyButton;
 
@@ -25,7 +25,7 @@ public class QuickMenuScreen extends Screen {
 
     @Override
     protected void init() {
-        ModConfig cfg = ModConfig.getInstance();
+        ModConfigData cfg = ModConfig.getInstance();
 
         int x = this.width / 2 - BUTTON_W / 2;
         int y = this.height / 2 - (BUTTON_H * 5 + GAP * 4) / 2;
@@ -40,9 +40,13 @@ public class QuickMenuScreen extends Screen {
                 .build());
 
         y += BUTTON_H + GAP;
-        this.selectedPackButton = this.addRenderableWidget(Button.builder(
+        this.addRenderableWidget(Button.builder(
                         selectedPackText(),
-                        button -> this.minecraft.setScreen(ClothConfigScreen.createConfigScreen(this)))
+                        button -> {
+                            if (this.minecraft != null) {
+                                this.minecraft.setScreen(ClothConfigScreen.createConfigScreen(this));
+                            }
+                        })
                 .bounds(x, y, BUTTON_W, BUTTON_H)
                 .build());
 
@@ -77,15 +81,10 @@ public class QuickMenuScreen extends Screen {
     }
 
     @Override
-    public void tick() {
-        if (this.selectedPackButton != null) {
-            this.selectedPackButton.setMessage(selectedPackText());
-        }
-    }
-
-    @Override
     public void onClose() {
-        this.minecraft.setScreen(this.parent);
+        if (this.minecraft != null) {
+            this.minecraft.setScreen(this.parent);
+        }
     }
 
     private Component selectedPackText() {
@@ -103,14 +102,12 @@ public class QuickMenuScreen extends Screen {
     private Component notificationsText(boolean enabled) {
         return Component.translatable(
                 "screen.quickresourcepack.menu.notifications",
-                enabled ? Component.translatable("options.on") : Component.translatable("options.off")
-        );
+                enabled ? Component.translatable("options.on") : Component.translatable("options.off"));
     }
 
     private Component autoApplyText(boolean enabled) {
         return Component.translatable(
                 "screen.quickresourcepack.menu.autoapply",
-                enabled ? Component.translatable("options.on") : Component.translatable("options.off")
-        );
+                enabled ? Component.translatable("options.on") : Component.translatable("options.off"));
     }
 }

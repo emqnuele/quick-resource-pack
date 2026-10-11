@@ -1,9 +1,0 @@
-{
-    "required": true,
-    "package": "com.emqnuele.quickresourcepack.mixin",
-    "compatibilityLevel": "JAVA_25",
-    "client": [],
-    "injectors": {
-        "defaultRequire": 1
-    }
-}

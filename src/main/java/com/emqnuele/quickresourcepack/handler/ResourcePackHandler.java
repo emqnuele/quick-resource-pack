@@ -2,19 +2,29 @@ package com.emqnuele.quickresourcepack.handler;
 
 import com.emqnuele.quickresourcepack.QuickResourcePackMod;
 import com.emqnuele.quickresourcepack.config.ModConfig;
+import com.emqnuele.quickresourcepack.core.PackToggleLogic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ResourcePackHandler {
-    private static volatile boolean isLoading = false;
+public final class ResourcePackHandler {
+    private ResourcePackHandler() {
+    }
+
+    private static final AtomicBoolean LOADING = new AtomicBoolean(false);
+
+    static boolean isLoading() {
+        return LOADING.get();
+    }
 
     public static String getPackDisplayName(String packId) {
-        if (packId == null || packId.isEmpty()) return "";
+        if (!PackToggleLogic.isValidPackId(packId)) {
+            return "";
+        }
         PackRepository repository = Minecraft.getInstance().getResourcePackRepository();
         for (Pack pack : repository.getAvailablePacks()) {
             if (pack.getId().equals(packId)) {
@@ -25,38 +35,85 @@ public class ResourcePackHandler {
     }
 
     public static void togglePack() {
-        if (isLoading) return;
-
-        String packId = ModConfig.getInstance().selectedResourcePack;
-        if (packId == null || packId.isEmpty()) {
-            NotificationHandler.notify(Component.translatable("notification.quickresourcepack.nopack"));
+        if (!LOADING.compareAndSet(false, true)) {
             return;
         }
+        try {
+            String packId = ModConfig.getInstance().selectedResourcePack;
+            if (!PackToggleLogic.isValidPackId(packId)) {
+                LOADING.set(false);
+                NotificationHandler.notify(Component.translatable("notification.quickresourcepack.nopack"));
+                return;
+            }
 
-        Minecraft client = Minecraft.getInstance();
-        PackRepository repository = client.getResourcePackRepository();
-        repository.reload();
+            Minecraft client = Minecraft.getInstance();
+            PackRepository repository = client.getResourcePackRepository();
+            repository.reload();
 
-        if (!repository.getAvailableIds().contains(packId)) {
-            String displayName = getPackDisplayName(packId);
-            NotificationHandler.notify(Component.translatable("notification.quickresourcepack.notfound", displayName));
+            if (!repository.getAvailableIds().contains(packId)) {
+                LOADING.set(false);
+                NotificationHandler.notify(Component.translatable("notification.quickresourcepack.notfound", packId));
+                return;
+            }
+
+            PackToggleLogic.ToggleResult result =
+                    PackToggleLogic.toggle(List.copyOf(repository.getSelectedIds()), packId);
+            repository.setSelected(result.selectedIds());
+
+            reloadAndNotify(client, packId);
+        } catch (RuntimeException e) {
+            LOADING.set(false);
+            QuickResourcePackMod.LOGGER.error("Failed to toggle resource pack", e);
+        }
+    }
+
+    public static void applyPack() {
+        if (!LOADING.compareAndSet(false, true)) {
             return;
         }
+        try {
+            String packId = ModConfig.getInstance().selectedResourcePack;
+            if (!PackToggleLogic.isValidPackId(packId)) {
+                LOADING.set(false);
+                return;
+            }
 
-        boolean enabled = repository.getSelectedIds().contains(packId);
-        List<String> profiles = new ArrayList<>(repository.getSelectedIds());
+            Minecraft client = Minecraft.getInstance();
+            PackRepository repository = client.getResourcePackRepository();
+            repository.reload();
 
-        if (enabled) {
-            profiles.remove(packId);
-        } else {
-            profiles.add(packId);
+            if (!repository.getAvailableIds().contains(packId)) {
+                LOADING.set(false);
+                QuickResourcePackMod.LOGGER.warn("Auto-apply: pack '{}' not found", packId);
+                return;
+            }
+
+            if (repository.getSelectedIds().contains(packId)) {
+                LOADING.set(false);
+                return;
+            }
+
+            repository.setSelected(PackToggleLogic.ensureAdded(List.copyOf(repository.getSelectedIds()), packId));
+
+            client.reloadResourcePacks().whenComplete((ignored, error) -> client.execute(() -> {
+                LOADING.set(false);
+                if (error != null) {
+                    QuickResourcePackMod.LOGGER.error("Auto-apply: reload failed", error);
+                }
+            }));
+        } catch (RuntimeException e) {
+            LOADING.set(false);
+            QuickResourcePackMod.LOGGER.error("Auto-apply failed", e);
         }
+    }
 
-        repository.setSelected(profiles);
-        isLoading = true;
-
-        client.reloadResourcePacks().thenRun(() -> client.execute(() -> {
-            isLoading = false;
+    private static void reloadAndNotify(Minecraft client, String packId) {
+        client.reloadResourcePacks().whenComplete((ignored, error) -> client.execute(() -> {
+            LOADING.set(false);
+            if (error != null) {
+                QuickResourcePackMod.LOGGER.error("Resource pack reload failed", error);
+                return;
+            }
             boolean nowEnabled = client.getResourcePackRepository().getSelectedIds().contains(packId);
             String displayName = getPackDisplayName(packId);
             if (nowEnabled) {
@@ -65,31 +122,5 @@ public class ResourcePackHandler {
                 NotificationHandler.notify(Component.translatable("notification.quickresourcepack.disabled", displayName));
             }
         }));
-    }
-
-    public static void applyPack() {
-        if (isLoading) return;
-
-        String packId = ModConfig.getInstance().selectedResourcePack;
-        if (packId == null || packId.isEmpty()) return;
-
-        Minecraft client = Minecraft.getInstance();
-        PackRepository repository = client.getResourcePackRepository();
-        repository.reload();
-
-        if (!repository.getAvailableIds().contains(packId)) {
-            QuickResourcePackMod.LOGGER.warn("Auto-apply: pack '{}' not found", packId);
-            return;
-        }
-
-        if (repository.getSelectedIds().contains(packId)) return;
-
-        List<String> profiles = new ArrayList<>(repository.getSelectedIds());
-        profiles.add(packId);
-        repository.setSelected(profiles);
-
-        isLoading = true;
-
-        client.reloadResourcePacks().thenRun(() -> client.execute(() -> isLoading = false));
     }
 }

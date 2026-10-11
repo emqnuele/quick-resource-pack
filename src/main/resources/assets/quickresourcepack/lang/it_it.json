@@ -15,19 +15,12 @@
     "screen.quickresourcepack.menu.notifications": "Notifiche: %s",
     "screen.quickresourcepack.menu.autoapply": "Applica all'avvio: %s",
 
-    "screen.quickresourcepack.picker": "Seleziona Resource Pack",
-    "screen.quickresourcepack.picker.set": "Imposta",
     "screen.quickresourcepack.picker.none": "Nessuno",
 
     "button.quickresourcepack.toggle": "Attiva/Disattiva",
-    "button.quickresourcepack.select": "Cambia Pack",
-    "button.quickresourcepack.open_config": "Apri Impostazioni",
-    "button.quickresourcepack.set": "Imposta toggle rapido",
 
     "notification.quickresourcepack.enabled": "%s attivato",
     "notification.quickresourcepack.disabled": "%s disattivato",
-    "notification.quickresourcepack.loading": "Caricamento resource pack...",
     "notification.quickresourcepack.nopack": "Nessun resource pack configurato",
-    "notification.quickresourcepack.notfound": "Resource pack non trovato: %s",
-    "notification.quickresourcepack.set": "Quick toggle impostato su: %s"
+    "notification.quickresourcepack.notfound": "Resource pack non trovato: %s"
 }

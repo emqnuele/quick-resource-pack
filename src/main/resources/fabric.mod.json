@@ -22,9 +22,6 @@
             "com.emqnuele.quickresourcepack.integration.ModMenuIntegration"
         ]
     },
-    "mixins": [
-        "quickresourcepack.mixins.json"
-    ],
     "depends": {
         "fabricloader": ">=${loader_version}",
         "minecraft": ">=26.1 <26.2",
