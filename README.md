@@ -30,8 +30,7 @@ a world or in a dimension.
 
 ## Requirements
 
-- Minecraft 26.3 (on older versions, keep using 1.2.0 for 26.2 or 1.1.1 for
-  26.1 and 1.21.x)
+- Minecraft 26.1 to 26.3 (players on 1.21.x can keep using version 1.1.1)
 - [Fabric Loader](https://fabricmc.net/)
 - [Fabric API](https://modrinth.com/mod/fabric-api)
 - [Mod Menu](https://modrinth.com/mod/modmenu) (optional)

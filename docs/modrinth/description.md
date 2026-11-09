@@ -57,7 +57,7 @@ Tell a slot when to turn on and forget about it:
 
 ## Versions
 
-**2.0** is for Minecraft **26.3**. Versions for 26.1 and 26.2 are on the way.
-Until then, nothing breaks: **1.2.0** still works on 26.2 and **1.1.1** on 26.1 and 1.21.x. Pick your game version on the Versions tab.
+**2.0** is for Minecraft **26.1 to 26.3**.
+Playing **1.21.x**? Version **1.1.1** is still here and still works: pick your game version on the Versions tab.
 
 Found a bug or have an idea? [Open an issue on GitHub](https://github.com/emqnuele/quick-resource-pack/issues).

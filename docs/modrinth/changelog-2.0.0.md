@@ -17,4 +17,4 @@ A full rewrite. Same idea, much more of it.
 - Your 1.x pack, key and settings are moved over automatically.
 - Keys no longer fire while you hold F3 for a debug shortcut.
 
-**Requires** Minecraft 26.3, Fabric Loader and Fabric API. Versions for 26.1 and 26.2 are on the way; until then 1.2.0 (26.2) and 1.1.1 (26.1, 1.21.x) keep working.
+**Requires** Minecraft 26.1 to 26.3, Fabric Loader and Fabric API. Players on 1.21.x can keep using 1.1.1.
