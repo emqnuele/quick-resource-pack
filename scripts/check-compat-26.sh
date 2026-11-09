@@ -111,7 +111,7 @@ for target in "${TARGETS[@]}"; do
     exit 2
   fi
 
-  if ! contains_target "$normalized" "${NORMALIZED_TARGETS[@]}"; then
+  if ! contains_target "$normalized" ${NORMALIZED_TARGETS[@]+"${NORMALIZED_TARGETS[@]}"}; then
     NORMALIZED_TARGETS+=("$normalized")
   fi
 done
