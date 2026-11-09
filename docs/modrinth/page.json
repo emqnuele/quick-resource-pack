@@ -1,0 +1,18 @@
+{
+    "title": "Quick Resource Pack",
+    "summary": "Toggle resource packs and texture packs with a hotkey, no loading screen. Pack wheel, key slots, profiles, and auto-switching per server, world or dimension.",
+    "categories": ["utility", "management"],
+    "issues_url": "https://github.com/emqnuele/quick-resource-pack/issues",
+    "source_url": "https://github.com/emqnuele/quick-resource-pack",
+    "gallery": [
+        {"file": "hero.webp", "title": "Pack Wheel", "description": "Hold R, point at a pack, let go.", "featured": true},
+        {"file": "tap.webp", "title": "No loading screen", "description": "Packs load while you keep playing."},
+        {"file": "banner.png", "title": "One world, five looks", "description": "The same spot in Vanilla, Autumn, Winter, Noir and Pastel Dream."},
+        {"file": "wheel.jpg", "title": "Pack Wheel, up close", "description": "Drawn with Minecraft's own hotbar."},
+        {"file": "hub.jpg", "title": "All your slots", "description": "Every slot with its key, mode and state."},
+        {"file": "editor.jpg", "title": "Slot editor", "description": "A PvP profile with three packs on Ctrl + P."},
+        {"file": "rules.jpg", "title": "Rules", "description": "Slots that turn on by themselves per server, world or dimension."},
+        {"file": "packscreen.jpg", "title": "Right where you expect it", "description": "A button on the vanilla Resource Packs screen."},
+        {"file": "options.jpg", "title": "Options", "description": "Messages, wheel timing, on-screen icons and more."}
+    ]
+}
