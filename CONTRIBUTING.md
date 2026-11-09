@@ -4,8 +4,9 @@ Developer notes: building, testing and releasing this branch.
 
 ## Development Setup (Fedora/Linux)
 
-`main` targets Minecraft 26.3 with Java 25. The 1.21.x line is maintenance-only
-on its own branches (`release/1.21.x`, `1.21-maintenance`).
+`main` is the 2.x line: one codebase that builds for Minecraft 26.1, 26.1.1,
+26.1.2, 26.2 and 26.3 with Java 25. The 1.x releases live on their own
+branches: `mc/1.21` (maintenance for 1.21.x), `mc/26.1` and `mc/26.2`.
 
 - Java 25 for active development on Minecraft 26.3 (`./gw25`)
 - Java 21 only for the 1.21.x maintenance line (`./gw21`)
@@ -67,7 +68,7 @@ What it does for each stable `1.21.x` release:
 
 - Resolves latest Yarn mappings for that patch
 - Resolves latest Fabric API build for that patch
-- Selects patch-aligned Cloth Config and Mod Menu versions
+- Selects patch-aligned Cloth Config and Mod Menu versions (the 1.x line still uses Cloth Config)
 - Runs `clean compileJava` with version overrides via `gw21`
 - Writes per-version logs under `compat-logs/`
 
@@ -144,7 +145,7 @@ Run compatibility checks for the 26.x line:
 Build all patch-specific jars for Modrinth:
 
 ```bash
-./scripts/build-release-26.sh --base-version 1.2.0
+./scripts/build-release-26.sh --base-version 2.0.0
 ```
 
 This writes artifacts and manifest to:
@@ -152,11 +153,14 @@ This writes artifacts and manifest to:
 - `release/26.x/<mc-version>/...`
 - `release/26.x/modrinth-upload.csv`
 
-Publish using the wrapper script:
+Publish using the wrapper script. It reads the notes from
+`MODRINTH_RELEASE_2.0.0.md` (override with `NOTES=...`) and declares Fabric API
+as required and Mod Menu as optional:
 
 ```bash
 export MODRINTH_TOKEN="your_modrinth_api_token"
-./scripts/publish-release-26.sh
+./scripts/publish-release-26.sh --dry-run
+./scripts/publish-release-26.sh --only 26.3 --featured
 ```
 
 Notes:
@@ -164,5 +168,23 @@ Notes:
 - The current stable targets are `26.1`, `26.1.1`, `26.1.2`, `26.2`, `26.3`.
 - `26` is treated as an alias to latest known 26.x target (`26.3`) in scripts.
 - `gradle.properties` defaults to `26.3`; the release scripts override versions per target.
-- APIs that differ between minor lines live in `src/compat/<minor>/java` (e.g. `src/compat/26.1`, `src/compat/26.3`). `build.gradle` picks the folder matching `minecraft_version`, so supporting a new minor line means adding a folder there.
+- APIs that differ between minor lines live in `src/compat/<minor>/java` (e.g. `src/compat/26.1`, `src/compat/26.3`). `build.gradle` picks the folder matching `minecraft_version`, so supporting a new minor line means adding a folder there. Mixins that hook code which moved between versions live there too (`src/compat/<minor>/java/.../mixin`), under the same class names listed in `quickresourcepack.mixins.json`.
+
+### 8) Update the Modrinth project page
+
+Everything on the page comes from `docs/modrinth/`:
+
+- `description.md`: the page body. Images point at `media/<file>`.
+- `page.json`: title, summary, categories, links and the gallery list.
+- `media/`: gallery images and clips (the MP4s are for social posts).
+
+```bash
+export MODRINTH_TOKEN="your_modrinth_api_token"
+./scripts/publish_modrinth_page.py --dry-run
+./scripts/publish_modrinth_page.py
+```
+
+The script uploads gallery items that are not on Modrinth yet (matched by
+title), swaps each `media/<file>` link for that item's Modrinth image link,
+then updates the listing.
 
