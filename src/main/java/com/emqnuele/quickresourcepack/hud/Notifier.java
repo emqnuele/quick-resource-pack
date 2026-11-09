@@ -1,5 +1,6 @@
 package com.emqnuele.quickresourcepack.hud;
 
+import com.emqnuele.quickresourcepack.compat.GuiCompat;
 import com.emqnuele.quickresourcepack.config.ConfigStore;
 import com.emqnuele.quickresourcepack.core.config.QrpConfig.NotificationStyle;
 import com.emqnuele.quickresourcepack.core.config.Slot;
@@ -93,11 +94,11 @@ public final class Notifier {
     }
 
     private static void toast(PackToast.Kind kind, Component headline, Component name, @Nullable String packId) {
-        PackToast.show(Minecraft.getInstance().gui.toastManager(), kind, headline, name, packId);
+        PackToast.show(GuiCompat.toasts(Minecraft.getInstance()), kind, headline, name, packId);
     }
 
     private static void actionBar(Component message) {
-        Minecraft.getInstance().gui.hud.setOverlayMessage(message, false);
+        GuiCompat.actionBar(Minecraft.getInstance(), message);
     }
 
     private static void chat(Component message) {

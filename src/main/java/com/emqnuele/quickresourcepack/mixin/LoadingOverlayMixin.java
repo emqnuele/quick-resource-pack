@@ -1,5 +1,7 @@
 package com.emqnuele.quickresourcepack.mixin;
 
+import com.emqnuele.quickresourcepack.compat.GuiCompat;
+import com.emqnuele.quickresourcepack.compat.ScreenCompat;
 import com.emqnuele.quickresourcepack.pack.SeamlessReload;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -61,7 +63,7 @@ public abstract class LoadingOverlayMixin extends Overlay implements SeamlessRel
         ci.cancel();
         this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + this.reload.getActualProgress() * 0.05F, 0.0F, 1.0F);
         // gui skips the screen while any overlay is set, so draw it ourselves
-        Screen screen = this.minecraft.gui.screen();
+        Screen screen = ScreenCompat.getScreen(this.minecraft);
         if (screen != null) {
             screen.extractRenderStateWithTooltipAndSubtitles(graphics, mouseX, mouseY, a);
         }
@@ -85,14 +87,14 @@ public abstract class LoadingOverlayMixin extends Overlay implements SeamlessRel
             failed = true;
             this.onFinish.accept(Optional.of(t));
         }
-        Screen screen = this.minecraft.gui.screen();
+        Screen screen = ScreenCompat.getScreen(this.minecraft);
         if (screen != null) {
             Window window = this.minecraft.getWindow();
             screen.init(window.getGuiScaledWidth(), window.getGuiScaledHeight());
         }
         // a failed reload installs its own recovery overlay, which must survive
-        if (this.minecraft.gui.overlay() == (Object) this) {
-            this.minecraft.gui.setOverlay(null);
+        if (GuiCompat.overlay(this.minecraft) == (Object) this) {
+            GuiCompat.setOverlay(this.minecraft, null);
         }
         qrp$report(failed);
     }
@@ -111,11 +113,6 @@ public abstract class LoadingOverlayMixin extends Overlay implements SeamlessRel
             this.qrp$reported = true;
             SeamlessReload.finished(this, failed);
         }
-    }
-
-    @Override
-    public boolean isPausing() {
-        return !qrp$isSeamless() && super.isPausing();
     }
 
     @Override

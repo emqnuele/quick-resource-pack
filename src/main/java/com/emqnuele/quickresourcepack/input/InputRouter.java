@@ -81,7 +81,7 @@ public final class InputRouter {
             return;
         }
         if (!KeybindGuard.shouldHandleToggle(screen != null, minecraft.player != null)) {
-            if (menuKey.matches(key) && screen instanceof HubScreen) {
+            if (isBoundTo(menuKey, key) && screen instanceof HubScreen) {
                 ScreenCompat.setScreen(minecraft, null);
             }
             return;
@@ -100,17 +100,17 @@ public final class InputRouter {
         if (comboTaken) {
             return;
         }
-        if (mainKey.matches(key)) {
+        if (isBoundTo(mainKey, key)) {
             if (canUseWheel(config)) {
                 MAIN_HOLD.press(Util.getMillis());
             } else {
                 firePrimary(minecraft, config);
             }
         }
-        if (wheelKey.matches(key)) {
+        if (isBoundTo(wheelKey, key)) {
             openWheel(minecraft, key, false);
         }
-        if (menuKey.matches(key)) {
+        if (isBoundTo(menuKey, key)) {
             HubScreen.open(null);
         }
     }
@@ -122,7 +122,7 @@ public final class InputRouter {
             wheel.onTriggerReleased();
             return;
         }
-        if (mainKey.matches(key) && MAIN_HOLD.isDown()) {
+        if (isBoundTo(mainKey, key) && MAIN_HOLD.isDown()) {
             HoldDetector.Event event = MAIN_HOLD.release(Util.getMillis(), holdThreshold());
             if (event == HoldDetector.Event.TAP && screen == null) {
                 firePrimary(minecraft, ConfigStore.get());
@@ -188,6 +188,11 @@ public final class InputRouter {
 
     private static long holdThreshold() {
         return ConfigStore.get().behavior.wheelHoldMs;
+    }
+
+    // the same test as KeyMapping.matches(Key), which 26.1 does not have
+    private static boolean isBoundTo(KeyMapping mapping, InputConstants.Key key) {
+        return !mapping.isUnbound() && KeyMappingHelper.getBoundKeyOf(mapping).equals(key);
     }
 
     public static List<Slot> slotsBoundTo(QrpConfig config, String keyName, int modifiers) {

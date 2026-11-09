@@ -5,9 +5,12 @@
     "compatibilityLevel": "JAVA_21",
     "client": [
         "KeyboardHandlerMixin",
+        "KeyboardOverlayMixin",
         "LoadingOverlayMixin",
-        "MinecraftMixin",
-        "MouseHandlerMixin"
+        "LoadingOverlayPauseMixin",
+        "MinecraftOverlayMixin",
+        "MouseHandlerMixin",
+        "MouseOverlayMixin"
     ],
     "injectors": {
         "defaultRequire": 1
