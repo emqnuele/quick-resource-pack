@@ -3,17 +3,18 @@
     "id": "quick-resource-pack",
     "version": "${version}",
     "name": "Quick Resource Pack",
-    "description": "Quickly toggle a specific resource pack with a keybind.",
+    "description": "Switch resource packs instantly: keybind slots, a pack wheel, profiles, auto-rules per server or dimension, and no loading screen.",
     "authors": [
         "emqnuele"
     ],
     "contact": {
-        "homepage": "https://emqnueleelefaraci.com/",
-        "sources": "https://github.com/emqnuele/quick-resource-pack"
+        "homepage": "https://modrinth.com/mod/quick-resource-pack",
+        "sources": "https://github.com/emqnuele/quick-resource-pack",
+        "issues": "https://github.com/emqnuele/quick-resource-pack/issues"
     },
     "license": "MIT",
     "icon": "icon.png",
-    "environment": "*",
+    "environment": "client",
     "entrypoints": {
         "client": [
             "com.emqnuele.quickresourcepack.QuickResourcePackMod"
@@ -22,14 +23,24 @@
             "com.emqnuele.quickresourcepack.integration.ModMenuIntegration"
         ]
     },
+    "mixins": [
+        "quickresourcepack.mixins.json"
+    ],
     "depends": {
         "fabricloader": ">=${loader_version}",
         "minecraft": "${minecraft_dependency}",
         "java": ">=25",
-        "fabric-api": "*",
-        "cloth-config": "*"
+        "fabric-api": "*"
     },
     "suggests": {
         "modmenu": "*"
+    },
+    "custom": {
+        "modmenu": {
+            "links": {
+                "modmenu.modrinth": "https://modrinth.com/mod/quick-resource-pack",
+                "modmenu.github_releases": "https://github.com/emqnuele/quick-resource-pack/releases"
+            }
+        }
     }
 }

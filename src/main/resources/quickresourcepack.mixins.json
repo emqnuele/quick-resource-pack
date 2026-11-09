@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.emqnuele.quickresourcepack.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "client": [
+        "KeyboardHandlerMixin",
+        "LoadingOverlayMixin",
+        "MinecraftMixin",
+        "MouseHandlerMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
