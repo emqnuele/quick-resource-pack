@@ -1,65 +1,59 @@
 # Quick Resource Pack
 
-A Fabric mod that lets you toggle a chosen resource pack on and off with a
-single keybind — no menu diving. Pick a pack once, then switch it instantly
-whenever you like.
+A client-side Fabric mod that switches resource packs with one key, without
+the loading screen. Give packs their own keys, pick one from a wheel, swap
+whole pack lists at once, and let packs change by themselves on a server, in
+a world or in a dimension.
 
 ## Features
 
-- **Quick Toggle**: press a key (default: `R`) to instantly enable or disable
-  your selected resource pack.
-- **Quick Menu**: an optional keybind (unbound by default) opens a small
-  in-game menu with the toggle, a pack picker shortcut and
-  notification/auto-apply switches.
-- **Configuration screen**: pick the pack from a dropdown via Mod Menu and
-  Cloth Config.
-- **Async reload**: packs reload in the background to minimize game freezes.
-- **In-game notifications**: chat feedback when a pack is enabled, disabled
-  or still loading.
-- **Screen-safe keybinds**: the toggle never fires while you are typing in
-  chat or have any screen open, and queued presses are drained so they do
-  not retrigger later.
+- **Quick Switch**: tap `R` to turn your main pack on or off.
+- **Pack Wheel**: hold `R`, point at a pack, let go. You can also click a
+  slot or press 1 to 9.
+- **No loading screen**: packs load in the background while you keep
+  playing, with a progress toast.
+- **Slots**: one or more packs with a key of their own. Shift, Ctrl and Alt
+  combos work, and the editor warns when Minecraft already uses a key.
+- **Three modes** per slot:
+  - **Toggle** adds its packs on top of the ones you use.
+  - **Profile** swaps your whole pack list, and gives it back on the next
+    press.
+  - **Cycle** steps through packs in order.
+- **Rules**: turn a slot on by itself on a server (`*.example.net`), in a
+  singleplayer world, or in a dimension.
+- **One menu**: open it from the button on the Resource Packs screen, from
+  Mod Menu, with a key, or with `/qrp`.
+- **Commands**: `/qrp`, `/qrp toggle <slot>`, `/qrp wheel`, `/qrp list`,
+  `/qrp reload`, `/qrp where`.
+- **Optional on-screen icons** for active slots, like status effects.
+- **Messages** as a toast, above the hotbar, in chat, or off.
 
 ## Requirements
 
+- Minecraft 26.3 (on older versions, keep using 1.2.0 for 26.2 or 1.1.1 for
+  26.1 and 1.21.x)
 - [Fabric Loader](https://fabricmc.net/)
 - [Fabric API](https://modrinth.com/mod/fabric-api)
-- [Cloth Config API](https://modrinth.com/mod/cloth-config)
-- [Mod Menu](https://modrinth.com/mod/modmenu) (optional, recommended — it
-  hosts the configuration screen)
+- [Mod Menu](https://modrinth.com/mod/modmenu) (optional)
 
 Grab the file built for your exact Minecraft version from the
 [Modrinth project](https://modrinth.com/mod/quick-resource-pack).
 
-## Installation
+## Getting started
 
-1. Install Fabric Loader for your Minecraft version.
-2. Download the Quick Resource Pack `.jar` matching your game version.
-3. Place it, together with the requirements above, in your `mods` folder.
-4. Launch the game.
+1. Install Fabric Loader and Fabric API.
+2. Put the Quick Resource Pack `.jar` in your `mods` folder.
+3. Join a world and press `R`. The menu opens so you can make your first
+   slot.
 
-## Usage
-
-1. **Select a pack**: go to `Mods` > `Quick Resource Pack` > `Configure`
-   and choose a pack from the dropdown list.
-2. **Toggle**: press `R` (rebindable under `Controls` > `Key Binds`) to
-   switch the selected pack on or off.
-3. **Quick menu** (optional): bind `Open Quick Menu` to get a small in-game
-   panel with the same options.
+Keys can be changed under `Controls` > `Key Binds` > `Quick Resource Pack`.
 
 ## Configuration
 
-Settings live in `config/quickresourcepack.json` (editable in-game through
-the Mod Menu screen):
-
-- `selectedResourcePack`: unique name of the pack to toggle (default: empty,
-  i.e. none selected).
-- `showNotifications`: chat feedback on toggle (default: on).
-- `autoApplyOnStart`: apply the selected pack when the game starts
-  (default: off).
-
-A corrupt config file is backed up to `.bak` and reset to defaults instead
-of crashing.
+Everything is set in game. Settings are stored in
+`config/quickresourcepack.json`. Settings from 1.x are moved over
+automatically, and a corrupt file is backed up to `.bak` and reset to
+defaults instead of crashing.
 
 ## Support
 
@@ -74,4 +68,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for build, test and release notes.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
