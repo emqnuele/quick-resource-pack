@@ -53,7 +53,14 @@ jobs:
         run: chmod +x gradlew gw21 scripts/with-java.sh scripts/check-compat-1.21.sh
 
       - name: run representative 1.21.x smoke matrix
-        run: ./scripts/check-compat-1.21.sh 1.21.1 1.21.4 1.21.8 1.21.11
+        run: ./scripts/check-compat-1.21.sh 1.21.9 1.21.10 1.21.11
+
+      - name: upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compat-logs-smoke
+          path: compat-logs/
 
   full:
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
@@ -73,3 +80,10 @@ jobs:
 
       - name: run full 1.21.x compatibility matrix
         run: ./scripts/check-compat-1.21.sh
+
+      - name: upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compat-logs-full
+          path: compat-logs/
