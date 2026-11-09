@@ -1,10 +1,16 @@
 name: minecraft 1.21.x compatibility
 
+# kept on main only because github runs schedules from there; main cannot compile 1.21
 on:
   pull_request:
+    branches:
+      - 'mc/1.21'
     paths:
       - src/**
       - build.gradle
+      - settings.gradle
+      - gradle/**
+      - gradlew
       - gradle.properties
       - gw21
       - scripts/with-java.sh
@@ -12,11 +18,13 @@ on:
       - .github/workflows/compat-1-21.yml
   push:
     branches:
-      - main
-      - master
+      - 'mc/1.21'
     paths:
       - src/**
       - build.gradle
+      - settings.gradle
+      - gradle/**
+      - gradlew
       - gradle.properties
       - gw21
       - scripts/with-java.sh
@@ -52,6 +60,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: mc/1.21
 
       - uses: actions/setup-java@v4
         with:
