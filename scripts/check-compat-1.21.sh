@@ -21,7 +21,7 @@ runs compile checks across minecraft 1.21.x versions by auto-resolving:
 
 examples:
   ./scripts/check-compat-1.21.sh
-  ./scripts/check-compat-1.21.sh 1.21.4 1.21.11
+  ./scripts/check-compat-1.21.sh 1.21.9 1.21.11
   GW_CMD=./gw21 ./scripts/check-compat-1.21.sh --fail-fast
 EOF
 }
@@ -69,9 +69,10 @@ if ! command -v "$GW_CMD" >/dev/null 2>&1 && [[ ! -x "$GW_CMD" ]]; then
   exit 2
 fi
 
+# 1.21.9 is the floor: the keybind category api used here is missing before it
 discover_targets() {
   curl -fsSL https://meta.fabricmc.net/v2/versions/game \
-    | jq -r '.[] | select(.stable == true and (.version | test("^1\\.21\\.[0-9]+$"))) | .version' \
+    | jq -r '.[] | select(.stable == true and (.version | test("^1\\.21\\.[0-9]+$")) and ((.version | split(".")[2] | tonumber) >= 9)) | .version' \
     | sort -V
 }
 
